@@ -4,7 +4,6 @@ import java.io.IOException;
 import java.util.List;
 
 import javax.swing.JFrame;
-import javax.swing.JLabel;
 import org.opencv.core.Core;
 import org.opencv.core.Mat;
 import org.opencv.core.MatOfRect;
@@ -118,18 +117,20 @@ public class FacialRecognition
 		faceDetector.detectMultiScale(image, faceDetections);
 		
 		//Set message text
-		display.setText(String.format("%s face(s) detected!", faceDetections.toArray().length));
+		display.setMessage(faceDetections.toArray().length + " face(s) detected!", 50, 50);
 		
 		//Draws a rectangle around each detection
-		for (Rect rect : faceDetections.toArray()) 
+		for (Rect rect : faceDetections.toArray()) //for each rectangle
 		{
 			Imgproc.rectangle(image, new Point(rect.x, rect.y), 
 					new Point(rect.x + rect.width, rect.y + rect.height),
 					new Scalar(255, 0, 255)); //Blue, Green, Red
 			
 			rectCrop = new Rect(rect.x, rect.y, rect.width, rect.height);
+			
+			display.setMessage("Person Name" /*identifyFace(image)*/, rect.x + 8, rect.y);
 		}
-		
+	
 		//Save the detection
 		if (!(rectCrop == null))
 		{
@@ -138,9 +139,6 @@ public class FacialRecognition
 			Imgcodecs.imwrite("croppedImage.jpg", croppedImage);
 		}
 
-		//Add method to ImageDisplay for more than one message
-		//List of Strings? (would need list of positions)
-		//display.setText(identifyFace());
 		return image;
 	}
 /*	
@@ -157,6 +155,8 @@ public class FacialRecognition
 				return fileName (trim file extension);
 			}
 		}
+		
+		return "???" //unidentified person
 	}
 */
 }

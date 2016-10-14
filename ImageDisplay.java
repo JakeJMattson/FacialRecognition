@@ -2,28 +2,34 @@ import java.awt.Color;
 import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.image.BufferedImage;
+import java.util.ArrayList;
+import java.util.List;
+
 import javax.swing.JPanel;
 
 @SuppressWarnings("serial")
 public class ImageDisplay extends JPanel
 {
 	private BufferedImage image;
-	private String text;
+	private List<String> messages = new ArrayList<String>();
+	private List<Integer> positions = new ArrayList<Integer>();
 	
 	public ImageDisplay()
 	{
 		super(); //JFrame
 	}
 	
-	//Image and text are both set before use, but not at the same time
+	//Image and messages are both set before use, but independently
 	public void setImage(BufferedImage image)
 	{
 		this.image = image;
 	}
 	
-	public void setText(String text)
+	public void setMessage(String text, int xPosition, int yPosition)
 	{
-		this.text = text;
+		messages.add(text);
+		positions.add(xPosition);
+		positions.add(yPosition);
 	}
 	
 	//Add content to frame
@@ -41,6 +47,14 @@ public class ImageDisplay extends JPanel
 		//Add text
 		g.setFont(new Font("ariel", 2, 20));
 		g.setColor(Color.MAGENTA);
-		g.drawString(text, 50, 50);
+		
+		for (int i = 0; i < positions.size(); i += 2)
+		{
+			g.drawString(messages.get((i/2)), positions.get(i), positions.get(i + 1));
+		}
+		
+		//Reset lists after use
+		messages = new ArrayList<String>();
+		positions = new ArrayList<Integer>();
 	}
 }
