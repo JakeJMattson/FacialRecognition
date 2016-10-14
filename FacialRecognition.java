@@ -41,7 +41,7 @@ public class FacialRecognition
 			e.printStackTrace();
 			System.exit(0);
 		}
-		
+
 		//Addition ideas:
 /*
 		Rescan captured faces to reduce error
@@ -60,11 +60,21 @@ public class FacialRecognition
 	    ImageDisplay display = new ImageDisplay();
 	    
 	    //Set frame preferences
-	    frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+	    frame.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
 	    frame.setTitle("Facial Detection");
 	    frame.setSize(680, 540);
 	    frame.setContentPane(display);
 	    frame.setVisible(true);
+	    
+	    frame.addWindowListener(new java.awt.event.WindowAdapter() 
+	    {
+	        @Override
+	        public void windowClosing(java.awt.event.WindowEvent windowEvent) 
+	        {
+	            display.setStatus(false);
+	            frame.dispose();
+	        }
+	    });
 	    
 	    return display;
 	}
@@ -83,8 +93,7 @@ public class FacialRecognition
 		    
 	    if (camera.isOpened())
 	    {
-	    	//Add WindowListener to ImageDisplay
-	    	while (true) //change to: while (frame exists)
+	    	while (display.getStatus())
 	    	{
 	    		camera.read(rawImage);
 	    		

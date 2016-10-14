@@ -13,10 +13,22 @@ public class ImageDisplay extends JPanel
 	private BufferedImage image;
 	private List<String> messages = new ArrayList<String>();
 	private List<Integer> positions = new ArrayList<Integer>();
+	private boolean openStatus;
 	
 	public ImageDisplay()
 	{
 		super(); //JFrame
+		openStatus = true;
+	}
+	
+	public boolean getStatus()
+	{
+		return this.openStatus;
+	}
+	
+	public void setStatus(boolean currentStatus)
+	{
+		this.openStatus = currentStatus;
 	}
 	
 	//Image and messages are both set before use, but independently
