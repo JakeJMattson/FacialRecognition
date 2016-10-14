@@ -15,7 +15,7 @@ public class ImageDisplay extends JPanel
 		super(); //JFrame
 	}
 	
-	//Image and text are both set before use, but not at once
+	//Image and text are both set before use, but not at the same time
 	public void setImage(BufferedImage image)
 	{
 		this.image = image;

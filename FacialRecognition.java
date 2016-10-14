@@ -6,9 +6,7 @@ import java.util.List;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import org.opencv.core.Core;
-import org.opencv.core.KeyPoint;
 import org.opencv.core.Mat;
-import org.opencv.core.MatOfKeyPoint;
 import org.opencv.core.MatOfRect;
 import org.opencv.core.Point;
 import org.opencv.core.Rect;
@@ -19,13 +17,8 @@ import org.opencv.imgproc.Imgproc;
 import org.opencv.objdetect.CascadeClassifier;
 import org.opencv.videoio.VideoCapture;
 
-@SuppressWarnings("serial")
-public class FacialRecognition extends JFrame 
+public class FacialRecognition
 {
-	JLabel lblPicture;
-	int startingNumber;
-	int runningShift;
-	
 	public static void main(String[] args) throws InterruptedException, IOException 
 	{	    
 		FacialRecognition driver = new FacialRecognition();
@@ -34,9 +27,10 @@ public class FacialRecognition extends JFrame
 	
 	public void start() throws InterruptedException
 	{
-		ImageDisplay displayFrame;
+		//Load OpenCV
 		System.loadLibrary(Core.NATIVE_LIBRARY_NAME);
-		displayFrame = createDisplayFrame();
+		
+		ImageDisplay displayFrame = createDisplayFrame();
 		
 		try
 		{
@@ -48,13 +42,25 @@ public class FacialRecognition extends JFrame
 			e.printStackTrace();
 			System.exit(0);
 		}
+		
+		//Addition ideas:
+/*
+		Rescan captured faces to reduce error
+		for (int i = 0; i < captures.length; i++)
+			if (!faceFound)
+				deleteFile(file);
+*/
+		
+		//Open 'captures' directory to allow naming on exit
 	}
 	
 	private ImageDisplay createDisplayFrame()
 	{
+		//Local variables
 		JFrame frame = new JFrame();
 	    ImageDisplay display = new ImageDisplay();
 	    
+	    //Set frame preferences
 	    frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 	    frame.setTitle("Facial Detection");
 	    frame.setSize(680, 540);
@@ -66,17 +72,20 @@ public class FacialRecognition extends JFrame
 		
 	public void capture(ImageDisplay display) throws InterruptedException, IOException
 	{
+		//Local variables
 	    Mat rawImage = new Mat();
 	    Mat newImage = new Mat();
 	    BufferedImage convertedImage;
 	    MatToImg converter = new MatToImg();
 	    
+	    //Start camera
 	    VideoCapture camera = new VideoCapture(0);
 		camera.open(0);
 		    
 	    if (camera.isOpened())
 	    {
-	    	while (true)
+	    	//Add WindowListener to ImageDisplay
+	    	while (true) //change to: while (frame exists)
 	    	{
 	    		camera.read(rawImage);
 	    		
@@ -90,26 +99,28 @@ public class FacialRecognition extends JFrame
 	    		}
 	    		else
 	    		{
-	    			System.out.println("Camera error!");
 	    			break;
 	    		}
 	    	}
+	    	//Return camera control to OS
 	    	camera.release();
 	    }
 	}
 	
 	public Mat detectFaces(Mat image, ImageDisplay display) throws IOException
 	{
-		CascadeClassifier faceDetector = new CascadeClassifier("lbpcascade_frontalface.xml");
-		Rect rectCrop = null;
-		
-		// Detect faces in the image.
+		//Local variables
 		MatOfRect faceDetections = new MatOfRect();
+		Rect rectCrop = null;
+		CascadeClassifier faceDetector = new CascadeClassifier("lbpcascade_frontalface.xml");
+		
+		//Detect faces in image
 		faceDetector.detectMultiScale(image, faceDetections);
 		
+		//Set message text
 		display.setText(String.format("%s face(s) detected!", faceDetections.toArray().length));
 		
-		// Draw a bounding box around each face.
+		//Draws a rectangle around each detection
 		for (Rect rect : faceDetections.toArray()) 
 		{
 			Imgproc.rectangle(image, new Point(rect.x, rect.y), 
@@ -119,29 +130,33 @@ public class FacialRecognition extends JFrame
 			rectCrop = new Rect(rect.x, rect.y, rect.width, rect.height);
 		}
 		
-		// Save the visualized detection.
+		//Save the detection
 		if (!(rectCrop == null))
 		{
 			Mat croppedImage = new Mat(image, rectCrop);
+			//Overwrite to save memory in current state
 			Imgcodecs.imwrite("croppedImage.jpg", croppedImage);
 		}
 
-		//identifyFace();
+		//Add method to ImageDisplay for more than one message
+		//List of Strings? (would need list of positions)
+		//display.setText(identifyFace());
 		return image;
 	}
 /*	
-	public void identifyFace() throws IOException
+	public String identifyFace(BufferedImage image) throws IOException
 	{
 		File[] captures = new File("./Captures/").listFiles();
 		for (int i = 0; i < captures.length; i++)
 		{
-        Mat srcImgMat = Imgcodecs.imread(sourcePath);
-        System.out.println("Loaded image at " + sourcePath);
-        MatOfKeyPoint matOfKeyPoints = new MatOfKeyPoint();
-        FeatureDetector blobDetector = FeatureDetector.create(FeatureDetector.SIMPLEBLOB);
-        blobDetector.detect(srcImgMat, matOfKeyPoints);
-        System.out.println("Detected " + matOfKeyPoints.size()+ " blobs in the image");
-        List<KeyPoint> keyPoints = matOfKeyPoints.toList();
+			//find comparison algorithm
+			//compare (image, captures[i]);
+			
+			if (percentSimilarity >= errorThreshold)
+			{
+				return fileName (trim file extension);
+			}
+		}
 	}
-	*/
+*/
 }
