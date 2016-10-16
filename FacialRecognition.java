@@ -1,3 +1,13 @@
+/*Ideas and Notes:
+ * Log processed image information into .txt files. 
+ * Image wouldn't need to be processed every frame.
+ * Compare speed: file reading to image processing.
+ * 
+ * Alter similarity threshold to increase accuracy.
+ */
+
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
@@ -5,11 +15,16 @@ import java.util.List;
 
 import javax.swing.JFrame;
 import org.opencv.core.Core;
+import org.opencv.core.DMatch;
 import org.opencv.core.Mat;
+import org.opencv.core.MatOfDMatch;
+import org.opencv.core.MatOfKeyPoint;
 import org.opencv.core.MatOfRect;
 import org.opencv.core.Point;
 import org.opencv.core.Rect;
 import org.opencv.core.Scalar;
+import org.opencv.features2d.DescriptorExtractor;
+import org.opencv.features2d.DescriptorMatcher;
 import org.opencv.features2d.FeatureDetector;
 import org.opencv.imgcodecs.Imgcodecs;
 import org.opencv.imgproc.Imgproc;
@@ -18,39 +33,20 @@ import org.opencv.videoio.VideoCapture;
 
 public class FacialRecognition
 {
-	public static void main(String[] args) throws InterruptedException, IOException 
+	public static void main(String[] args)
 	{	    
 		FacialRecognition driver = new FacialRecognition();
 		driver.start();
 	}
 	
-	public void start() throws InterruptedException
+	public void start()
 	{
 		//Load OpenCV
 		System.loadLibrary(Core.NATIVE_LIBRARY_NAME);
 		
 		ImageDisplay displayFrame = createDisplayFrame();
-		
-		try
-		{
-			capture(displayFrame);
-		}
-		
-		catch (Exception e)
-		{
-			e.printStackTrace();
-			System.exit(0);
-		}
 
-		//Addition ideas:
-/*
-		Rescan captured faces to reduce error
-		for (int i = 0; i < captures.length; i++)
-			if (!faceFound)
-				deleteFile(file);
-*/
-		
-		//Open 'captures' directory to allow naming on exit
+		capture(displayFrame);
 	}
 	
 	private ImageDisplay createDisplayFrame()
@@ -62,24 +58,23 @@ public class FacialRecognition
 	    //Set frame preferences
 	    frame.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
 	    frame.setTitle("Facial Detection");
-	    frame.setSize(680, 540);
-	    frame.setContentPane(display);
-	    frame.setVisible(true);
-	    
-	    frame.addWindowListener(new java.awt.event.WindowAdapter() 
+	    frame.setSize(656, 519);
+	    frame.addWindowListener(new WindowAdapter() 
 	    {
 	        @Override
-	        public void windowClosing(java.awt.event.WindowEvent windowEvent) 
+	        public void windowClosing(WindowEvent windowClosed) 
 	        {
 	            display.setStatus(false);
 	            frame.dispose();
 	        }
 	    });
+	    frame.setContentPane(display);
+	    frame.setVisible(true);
 	    
 	    return display;
 	}
 		
-	public void capture(ImageDisplay display) throws InterruptedException, IOException
+	public void capture(ImageDisplay display)
 	{
 		//Local variables
 	    Mat rawImage = new Mat();
@@ -89,38 +84,29 @@ public class FacialRecognition
 	    
 	    //Start camera
 	    VideoCapture camera = new VideoCapture(0);
-		camera.open(0);
-		    
-	    if (camera.isOpened())
-	    {
-	    	while (display.getStatus())
-	    	{
-	    		camera.read(rawImage);
-	    		
-	    		if (!rawImage.empty())
-	    		{
-	    			newImage = detectFaces(rawImage, display);
-	    			converter.setMatrix(newImage, ".jpg");
-	    			convertedImage = converter.getBufferedImage();
-	    			display.setImage(convertedImage);
-	    			display.repaint();
-	    		}
-	    		else
-	    		{
-	    			break;
-	    		}
-	    	}
-	    	//Return camera control to OS
-	    	camera.release();
-	    }
+
+	    //While frame is not closed
+    	while (display.getStatus())
+    	{
+    		camera.read(rawImage);
+			newImage = detectFaces(rawImage, display);
+			converter.setMatrix(newImage, ".png");
+			convertedImage = converter.getBufferedImage();
+			display.setImage(convertedImage);
+			display.repaint();
+    	}
+    	
+    	//Return camera control to OS
+    	camera.release();
 	}
 	
-	public Mat detectFaces(Mat image, ImageDisplay display) throws IOException
+	public Mat detectFaces(Mat image, ImageDisplay display)
 	{
 		//Local variables
-		MatOfRect faceDetections = new MatOfRect();
-		Rect rectCrop = null;
 		CascadeClassifier faceDetector = new CascadeClassifier("lbpcascade_frontalface.xml");
+		MatOfRect faceDetections = new MatOfRect();
+		Rect faceRect = null;
+		Mat croppedImage;
 		
 		//Detect faces in image
 		faceDetector.detectMultiScale(image, faceDetections);
@@ -129,43 +115,83 @@ public class FacialRecognition
 		display.setMessage(faceDetections.toArray().length + " face(s) detected!", 50, 50);
 		
 		//Draws a rectangle around each detection
-		for (Rect rect : faceDetections.toArray()) //for each rectangle
-		{
+		for (Rect rect : faceDetections.toArray())
+		{			
+			faceRect = new Rect(rect.x, rect.y, rect.width, rect.height);
+			
+			if (!(faceRect == null))
+			{
+				croppedImage = new Mat(image, faceRect);
+				display.setMessage("ID: " + identifyFace(croppedImage), rect.x + 8, rect.y);
+			}
+			
+			//Draw rectangle onto image
 			Imgproc.rectangle(image, new Point(rect.x, rect.y), 
 					new Point(rect.x + rect.width, rect.y + rect.height),
 					new Scalar(255, 0, 255)); //Blue, Green, Red
-			
-			rectCrop = new Rect(rect.x, rect.y, rect.width, rect.height);
-			
-			display.setMessage("Person Name" /*identifyFace(image)*/, rect.x + 8, rect.y);
 		}
-	
-		//Save the detection
-		if (!(rectCrop == null))
-		{
-			Mat croppedImage = new Mat(image, rectCrop);
-			//Overwrite to save memory in current state
-			Imgcodecs.imwrite("croppedImage.jpg", croppedImage);
-		}
-
 		return image;
 	}
-/*	
-	public String identifyFace(BufferedImage image) throws IOException
+
+	public String identifyFace(Mat image)
+	{		
+		//Local variables
+		String fileName = "lenaFace.png";
+		String faceID = null;
+		int similarities = compareFaces(image, fileName);
+	  
+		//Margin of error
+		if (similarities > 4) 
+			faceID = "Lena";
+		else 
+			faceID = "???";
+		
+		return faceID;
+	}
+
+	public int compareFaces(Mat image, String fileName)
 	{
-		File[] captures = new File("./Captures/").listFiles();
-		for (int i = 0; i < captures.length; i++)
+		//Local variables
+		int similarity = 0;
+		FeatureDetector detector = FeatureDetector.create(FeatureDetector.ORB);
+		DescriptorExtractor extractor = DescriptorExtractor.create(DescriptorExtractor.ORB);
+		DescriptorMatcher matcher = DescriptorMatcher.create(DescriptorMatcher.BRUTEFORCE_HAMMING);
+		MatOfKeyPoint keypoints1 = new MatOfKeyPoint();
+		MatOfKeyPoint keypoints2 = new MatOfKeyPoint();
+		Mat descriptors1 = new Mat();
+		Mat descriptors2 = new Mat();
+		
+		//Images to compare
+		Mat currentImage = image;
+		Mat compareImage = Imgcodecs.imread(fileName);
+		
+		//Detect key points
+		detector.detect(currentImage, keypoints1);
+		detector.detect(compareImage, keypoints2);
+		extractor.compute(currentImage, keypoints1, descriptors1);
+		extractor.compute(compareImage, keypoints2, descriptors2);
+		
+		//Match points
+		MatOfDMatch matches = new MatOfDMatch();
+		  
+		if (descriptors2.cols() == descriptors1.cols()) 
 		{
-			//find comparison algorithm
-			//compare (image, captures[i]);
-			
-			if (percentSimilarity >= errorThreshold)
+			matcher.match(descriptors1, descriptors2, matches);
+			 
+			//Check matches of key points
+			DMatch[] match = matches.toArray();
+
+			//Determine similarity
+			for (int i = 0; i < descriptors1.rows(); i++) 
 			{
-				return fileName (trim file extension);
+				//at 10, Lena != Lena
+				//at 100, face == Lena
+				if (match[i].distance <= 50) 
+				{
+					similarity++;
+				}
 			}
 		}
-		
-		return "???" //unidentified person
+		return similarity;
 	}
-*/
 }

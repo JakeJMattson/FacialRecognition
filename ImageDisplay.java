@@ -54,7 +54,7 @@ public class ImageDisplay extends JPanel
 		}
 		
 		//Add image
-		g.drawImage(image, 10, 10, image.getWidth(), image.getHeight(), null);
+		g.drawImage(image, 0, 0, image.getWidth(), image.getHeight(), null);
 		
 		//Add text
 		g.setFont(new Font("ariel", 2, 20));
