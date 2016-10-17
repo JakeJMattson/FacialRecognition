@@ -2,6 +2,8 @@
  * Log processed image information into .txt files. 
  * Image wouldn't need to be processed every frame.
  * Compare speed: file reading to image processing.
+ * 23.373 ms vs. xx.xxx ms over 1000 frames.
+ * (Test incomplete)
  * 
  * Alter similarity threshold to increase accuracy.
  */
@@ -11,7 +13,6 @@ import java.awt.event.WindowEvent;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
-import java.util.List;
 
 import javax.swing.JFrame;
 import org.opencv.core.Core;
@@ -33,6 +34,8 @@ import org.opencv.videoio.VideoCapture;
 
 public class FacialRecognition
 {
+	File[] captures = new File("Captures").listFiles();
+	
 	public static void main(String[] args)
 	{	    
 		FacialRecognition driver = new FacialRecognition();
@@ -45,8 +48,9 @@ public class FacialRecognition
 		System.loadLibrary(Core.NATIVE_LIBRARY_NAME);
 		
 		ImageDisplay displayFrame = createDisplayFrame();
-
 		capture(displayFrame);
+		
+		System.exit(0);
 	}
 	
 	private ImageDisplay createDisplayFrame()
@@ -57,7 +61,7 @@ public class FacialRecognition
 	    
 	    //Set frame preferences
 	    frame.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
-	    frame.setTitle("Facial Detection");
+	    frame.setTitle("Facial Recognition");
 	    frame.setSize(656, 519);
 	    frame.addWindowListener(new WindowAdapter() 
 	    {
@@ -100,7 +104,7 @@ public class FacialRecognition
     	camera.release();
 	}
 	
-	public Mat detectFaces(Mat image, ImageDisplay display)
+ 	public Mat detectFaces(Mat image, ImageDisplay display)
 	{
 		//Local variables
 		CascadeClassifier faceDetector = new CascadeClassifier("lbpcascade_frontalface.xml");
@@ -121,8 +125,12 @@ public class FacialRecognition
 			
 			if (!(faceRect == null))
 			{
+				//Crop image to detection and save
 				croppedImage = new Mat(image, faceRect);
-				display.setMessage("ID: " + identifyFace(croppedImage), rect.x + 8, rect.y);
+				Imgcodecs.imwrite("croppedImage.png", croppedImage);
+				
+				//Add ID above detection
+				display.setMessage("ID: " + identifyFace(croppedImage), rect.x + 8, rect.y - 1);
 			}
 			
 			//Draw rectangle onto image
@@ -136,16 +144,32 @@ public class FacialRecognition
 	public String identifyFace(Mat image)
 	{		
 		//Local variables
-		String fileName = "lenaFace.png";
-		String faceID = null;
-		int similarities = compareFaces(image, fileName);
-	  
-		//Margin of error
-		if (similarities > 4) 
-			faceID = "Lena";
-		else 
-			faceID = "???";
+		String name;
+		String faceID = "???";
+		int similarities = 0;
 		
+		//Check files for matches
+		for (int i = 0; i < captures.length; i++)
+		{
+			//Get name from file
+			name = captures[i].getName();
+			name = name.substring(0, name.indexOf(".")).trim();
+			try
+			{
+				similarities = compareFaces(image, captures[i].getCanonicalPath());
+			}
+			catch (IOException e)
+			{
+				e.printStackTrace();
+			}
+			
+			//Margin of error
+			if (similarities > 20)
+			{
+				faceID = name;
+				break;
+			}
+		}
 		return faceID;
 	}
 
@@ -160,6 +184,7 @@ public class FacialRecognition
 		MatOfKeyPoint keypoints2 = new MatOfKeyPoint();
 		Mat descriptors1 = new Mat();
 		Mat descriptors2 = new Mat();
+		DMatch[] match;
 		
 		//Images to compare
 		Mat currentImage = image;
@@ -179,17 +204,20 @@ public class FacialRecognition
 			matcher.match(descriptors1, descriptors2, matches);
 			 
 			//Check matches of key points
-			DMatch[] match = matches.toArray();
+			match = matches.toArray();
 
 			//Determine similarity
 			for (int i = 0; i < descriptors1.rows(); i++) 
 			{
 				//at 10, Lena != Lena
 				//at 100, face == Lena
-				if (match[i].distance <= 50) 
+				if (match[i].distance <= 45) 
 				{
+					System.out.println(match[i].distance);
 					similarity++;
 				}
+				else
+					System.out.println(match[i].distance);
 			}
 		}
 		return similarity;
