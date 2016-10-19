@@ -12,11 +12,7 @@ public class MatToImg
 	Mat matrix;
 	MatOfByte byteMatrix;
 	String fileExtension;
-	
-	public MatToImg()
-	{
-	}
-	
+		
 	public BufferedImage getBufferedImage()
 	{
 		Imgcodecs.imencode(fileExtension, matrix, byteMatrix);

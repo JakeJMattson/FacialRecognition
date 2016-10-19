@@ -1,20 +1,19 @@
 /*Ideas and Notes:
- * Log processed image information into .txt files. 
- * Image wouldn't need to be processed every frame.
- * Compare speed: file reading to image processing.
- * 23.373 ms vs. xx.xxx ms over 1000 frames.
- * (Test incomplete)
  * 
  * Alter similarity threshold to increase accuracy.
+ * 
+ * Use multi-threading to process images quicker.
+ * 
+ * Pack GUI instead of setting size.
+ * 
+ * Merge ImageDisplay and CaptureGUI.
  */
 
-import java.awt.event.WindowAdapter;
-import java.awt.event.WindowEvent;
+import java.awt.Color;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 
-import javax.swing.JFrame;
 import org.opencv.core.Core;
 import org.opencv.core.DMatch;
 import org.opencv.core.Mat;
@@ -34,10 +33,10 @@ import org.opencv.videoio.VideoCapture;
 
 public class FacialRecognition
 {
-	File[] captures = new File("Captures").listFiles();
+	File[] captures;
 	
 	public static void main(String[] args)
-	{	    
+	{
 		FacialRecognition driver = new FacialRecognition();
 		driver.start();
 	}
@@ -47,53 +46,31 @@ public class FacialRecognition
 		//Load OpenCV
 		System.loadLibrary(Core.NATIVE_LIBRARY_NAME);
 		
-		ImageDisplay displayFrame = createDisplayFrame();
-		capture(displayFrame);
+		//Begin Capture
+		capture();
 		
+		//Exit
 		System.exit(0);
 	}
-	
-	private ImageDisplay createDisplayFrame()
-	{
-		//Local variables
-		JFrame frame = new JFrame();
-	    ImageDisplay display = new ImageDisplay();
-	    
-	    //Set frame preferences
-	    frame.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
-	    frame.setTitle("Facial Recognition");
-	    frame.setSize(656, 519);
-	    frame.addWindowListener(new WindowAdapter() 
-	    {
-	        @Override
-	        public void windowClosing(WindowEvent windowClosed) 
-	        {
-	            display.setStatus(false);
-	            frame.dispose();
-	        }
-	    });
-	    frame.setContentPane(display);
-	    frame.setVisible(true);
-	    
-	    return display;
-	}
 		
-	public void capture(ImageDisplay display)
+	public void capture()
 	{
 		//Local variables
 	    Mat rawImage = new Mat();
 	    Mat newImage = new Mat();
 	    BufferedImage convertedImage;
 	    MatToImg converter = new MatToImg();
+	    ImageDisplay display = new ImageDisplay();
+		CaptureGUI frame = new CaptureGUI(display);
 	    
 	    //Start camera
 	    VideoCapture camera = new VideoCapture(0);
 
 	    //While frame is not closed
-    	while (display.getStatus())
+    	while (frame.getStatus())
     	{
     		camera.read(rawImage);
-			newImage = detectFaces(rawImage, display);
+			newImage = detectFaces(rawImage, frame, display);
 			converter.setMatrix(newImage, ".png");
 			convertedImage = converter.getBufferedImage();
 			display.setImage(convertedImage);
@@ -104,19 +81,20 @@ public class FacialRecognition
     	camera.release();
 	}
 	
- 	public Mat detectFaces(Mat image, ImageDisplay display)
+ 	public Mat detectFaces(Mat image, CaptureGUI frame, ImageDisplay display)
 	{
 		//Local variables
 		CascadeClassifier faceDetector = new CascadeClassifier("lbpcascade_frontalface.xml");
 		MatOfRect faceDetections = new MatOfRect();
 		Rect faceRect = null;
 		Mat croppedImage;
+		Color color = frame.getTextColor();
 		
 		//Detect faces in image
 		faceDetector.detectMultiScale(image, faceDetections);
 		
 		//Set message text
-		display.setMessage(faceDetections.toArray().length + " face(s) detected!", 50, 50);
+		display.setMessage(faceDetections.toArray().length + " face(s) detected!", 50, 50, color);
 		
 		//Draws a rectangle around each detection
 		for (Rect rect : faceDetections.toArray())
@@ -125,18 +103,20 @@ public class FacialRecognition
 			
 			if (!(faceRect == null))
 			{
-				//Crop image to detection and save
+				//Crop image to detection
 				croppedImage = new Mat(image, faceRect);
-				Imgcodecs.imwrite("croppedImage.png", croppedImage);
+				
+				//Attempt to save face
+				FileSaver.save(croppedImage);
 				
 				//Add ID above detection
-				display.setMessage("ID: " + identifyFace(croppedImage), rect.x + 8, rect.y - 1);
+				display.setMessage("ID: " + identifyFace(croppedImage), rect.x + 8, rect.y - 1, color);
 			}
 			
 			//Draw rectangle onto image
 			Imgproc.rectangle(image, new Point(rect.x, rect.y), 
 					new Point(rect.x + rect.width, rect.y + rect.height),
-					new Scalar(255, 0, 255)); //Blue, Green, Red
+					new Scalar(color.getBlue(), color.getGreen(), color.getRed())); //Blue, Green, Red
 		}
 		return image;
 	}
@@ -148,12 +128,17 @@ public class FacialRecognition
 		String faceID = "???";
 		int similarities = 0;
 		
+		//Refresh files
+		captures = FileSaver.getFiles();
+		
 		//Check files for matches
 		for (int i = 0; i < captures.length; i++)
 		{
 			//Get name from file
 			name = captures[i].getName();
 			name = name.substring(0, name.indexOf(".")).trim();
+			
+			//Calculate similarity between faces
 			try
 			{
 				similarities = compareFaces(image, captures[i].getCanonicalPath());
@@ -164,7 +149,7 @@ public class FacialRecognition
 			}
 			
 			//Margin of error
-			if (similarities > 20)
+			if (similarities > 7)
 			{
 				faceID = name;
 				break;
@@ -189,7 +174,7 @@ public class FacialRecognition
 		//Images to compare
 		Mat currentImage = image;
 		Mat compareImage = Imgcodecs.imread(fileName);
-		
+
 		//Detect key points
 		detector.detect(currentImage, keypoints1);
 		detector.detect(compareImage, keypoints2);
@@ -200,10 +185,9 @@ public class FacialRecognition
 		MatOfDMatch matches = new MatOfDMatch();
 		  
 		if (descriptors2.cols() == descriptors1.cols()) 
-		{
-			matcher.match(descriptors1, descriptors2, matches);
-			 
+		{		 
 			//Check matches of key points
+			matcher.match(descriptors1, descriptors2, matches);
 			match = matches.toArray();
 
 			//Determine similarity
@@ -211,13 +195,8 @@ public class FacialRecognition
 			{
 				//at 10, Lena != Lena
 				//at 100, face == Lena
-				if (match[i].distance <= 45) 
-				{
-					System.out.println(match[i].distance);
+				if (match[i].distance <= 60)
 					similarity++;
-				}
-				else
-					System.out.println(match[i].distance);
 			}
 		}
 		return similarity;
