@@ -7,16 +7,14 @@ public final class FileSaver
 	private static final String FOLDER_NAME = "Captures";
 	private static File databasePath = new File(FOLDER_NAME);
 	private static final String EXTENSION = ".png";
-	private static String name;
 	private static String path;
 	
 	public static void setName(String personName)
 	{
-		name = personName;
-		setValidPath();
+		setValidPath(personName);
 	}
 	
-	private static void setValidPath()
+	private static void setValidPath(String name)
 	{
 		//Create folder to store saved faces
 		if (!databasePath.exists())

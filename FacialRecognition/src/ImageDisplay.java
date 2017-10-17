@@ -17,7 +17,7 @@ public class ImageDisplay extends JPanel
 		super(); //JPanel
 	}
 	
-	//Image and messages are both set before use, but independently
+	//Image and message are both set before use, but independently
 	public void setImage(BufferedImage image)
 	{
 		this.image = image;

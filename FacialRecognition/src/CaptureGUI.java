@@ -53,10 +53,12 @@ public class CaptureGUI extends JFrame
 
 	private JPanel createToolbarPanel()
 	{
+		//Create panels
 		JPanel toolbarPanel = new JPanel();
 		JPanel savePanel = createSavePanel();
 		JPanel colorPanel = createColorPanel();
 		
+		//Combine panels
 		toolbarPanel.add(savePanel);
 		toolbarPanel.add(colorPanel);
 		toolbarPanel.setLayout(new FlowLayout(FlowLayout.LEFT));

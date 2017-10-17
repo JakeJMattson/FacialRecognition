@@ -68,19 +68,24 @@ public class FacialRecognition
 	
 	public BufferedImage convertMatToImage(Mat matrix)
 	{
-        BufferedImage out;
+		//Local variables
         int width = matrix.width();
         int height = matrix.height();
         int type = BufferedImage.TYPE_BYTE_GRAY;
         byte[] data = new byte[width * height * (int)matrix.elemSize()];
+        BufferedImage out;
         
+        //Get matrix data
         matrix.get(0, 0, data);
 
+        //Determine type
         if(matrix.channels() != 1)
             type = BufferedImage.TYPE_3BYTE_BGR;
 
+        //Create image and pass matrix data
         out = new BufferedImage(width, height, type);
         out.getRaster().setDataElements(0, 0, width, height, data);
+        
         return out;	
 	}
 	
@@ -127,38 +132,42 @@ public class FacialRecognition
 	public String identifyFace(Mat image)
 	{		
 		//Local variables
-		String name;
-		String faceID = "???";
+		String faceID = "";
+		int errorThreshold = 3;
 		int similarities = 0;
-		int error = 3;
+		int mostSimilar = 0;
 		
 		//Refresh files
 		captures = FileSaver.getFiles();
 		
 		//Check files for matches
 		for (int i = 0; i < captures.length; i++)
-		{
-			//Get name from file
-			name = captures[i].getName();
-			name = name.substring(0, name.indexOf(".")).trim();
-			
-			//Calculate similarity between faces
+		{			
 			try
 			{
+				//Calculate similarity between face on screen and face in database
 				similarities = compareFaces(image, captures[i].getCanonicalPath());
+				
+				//Find most similar face in list
+				if (similarities > mostSimilar)
+				{
+					mostSimilar = similarities;
+					
+					//Get name from file
+					faceID = captures[i].getName();
+					faceID = faceID.substring(0, faceID.indexOf(".")).trim();
+				}
 			}
 			catch (IOException e)
 			{
 				e.printStackTrace();
 			}
-			
-			//Margin of error
-			if (similarities > error)
-			{
-				faceID = name;
-				break;
-			}
 		}
+		
+		//Margin of error
+		if (mostSimilar < errorThreshold)
+			faceID = "???";
+		
 		return faceID;
 	}
 
@@ -199,7 +208,7 @@ public class FacialRecognition
 			{
 				//at 10, Lena != Lena
 				//at 100, face == Lena
-				if (match[i].distance <= 80)
+				if (match[i].distance <= 40)
 					similarity++;
 			}
 		}
