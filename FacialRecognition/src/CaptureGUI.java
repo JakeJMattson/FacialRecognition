@@ -1,19 +1,7 @@
-import java.awt.BorderLayout;
-import java.awt.Color;
-import java.awt.Dimension;
-import java.awt.FlowLayout;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.WindowAdapter;
-import java.awt.event.WindowEvent;
+import java.awt.*;
+import java.awt.event.*;
 import java.lang.reflect.Field;
-
-import javax.swing.JButton;
-import javax.swing.JComboBox;
-import javax.swing.JFrame;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.JTextField;
+import javax.swing.*;
 
 @SuppressWarnings("serial")
 public class CaptureGUI extends JFrame
@@ -30,7 +18,6 @@ public class CaptureGUI extends JFrame
 	public CaptureGUI(ImageDisplay display)
 	{
 		this.color = DEFAULT_COLOR;
-		FileSaver.initialSetup();
 		buildGUI(display);
 	}
 
@@ -52,7 +39,7 @@ public class CaptureGUI extends JFrame
 	{
 		setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
 	    setTitle("Facial Recognition");
-	    setSize(656, 560);
+	    setSize(656, 565);
 	    addWindowListener(new WindowAdapter() 
 	    {
 	        @Override
@@ -95,6 +82,8 @@ public class CaptureGUI extends JFrame
 		txtFileName.setPreferredSize(new Dimension(150, 24));
 		btnSaveFile.addActionListener(this);
 
+		savePanel.setBorder(BorderFactory.createLineBorder(Color.black));
+		
 		//Add components to panel
 		savePanel.add(lblFileName);
 		savePanel.add(txtFileName);
@@ -117,8 +106,9 @@ public class CaptureGUI extends JFrame
 			colorDropDown.addItem(colors[i]);
 		
 		btnSetColor = new JButton("Set Color");
-		
 		btnSetColor.addActionListener(this);
+		
+		colorPanel.setBorder(BorderFactory.createLineBorder(Color.black));
 		
 		//Add components to panel		
 		colorPanel.add(colorDropDown);

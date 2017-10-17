@@ -1,5 +1,4 @@
 import java.io.File;
-
 import org.opencv.core.Mat;
 import org.opencv.imgcodecs.Imgcodecs;
 
@@ -11,13 +10,6 @@ public final class FileSaver
 	private static String name;
 	private static String path;
 	
-	public static void initialSetup()
-	{		
-		//Create folder to store saved faces
-		if (!databasePath.exists())
-			databasePath.mkdir();
-	}
-	
 	public static void setName(String personName)
 	{
 		name = personName;
@@ -26,6 +18,10 @@ public final class FileSaver
 	
 	private static void setValidPath()
 	{
+		//Create folder to store saved faces
+		if (!databasePath.exists())
+			databasePath.mkdir();
+		
 		//Avoid overwriting files by adding a space to a repeated name
 		while ((new File(databasePath + "/" + name + EXTENSION)).exists())
 		{
@@ -36,7 +32,7 @@ public final class FileSaver
 	
 	public static void save(Mat image)
 	{
-		if (!(path == null))
+		if (path != null)
 			Imgcodecs.imwrite(path, image);
 		
 		//Set path to null after saving to limit to 1 save

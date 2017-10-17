@@ -1,10 +1,7 @@
-import java.awt.Color;
-import java.awt.Font;
-import java.awt.Graphics;
+import java.awt.*;
 import java.awt.image.BufferedImage;
-import java.util.ArrayList;
+import java.util.*;
 import java.util.List;
-
 import javax.swing.JPanel;
 
 @SuppressWarnings("serial")
@@ -39,26 +36,25 @@ public class ImageDisplay extends JPanel
 	public void paintComponent(Graphics g)
 	{
 		super.paintComponent(g);
-		if (image == null)
+		
+		if (image != null)
 		{
-			return;
+			//Add image
+			g.drawImage(image, 0, 0, image.getWidth(), image.getHeight(), null);
+			
+			//Set text preferences
+			g.setFont(new Font("ariel", 2, 20));
+			g.setColor(textColor);
+			
+			//Add text
+			for (int i = 0; i < positions.size(); i += 2)
+			{
+				g.drawString(messages.get((i/2)), positions.get(i), positions.get(i + 1));
+			}
+			
+			//Reset lists after use
+			messages = new ArrayList<String>();
+			positions = new ArrayList<Integer>();
 		}
-		
-		//Add image
-		g.drawImage(image, 0, 0, image.getWidth(), image.getHeight(), null);
-		
-		//Set text preferences
-		g.setFont(new Font("ariel", 2, 20));
-		g.setColor(textColor);
-		
-		//Add text
-		for (int i = 0; i < positions.size(); i += 2)
-		{
-			g.drawString(messages.get((i/2)), positions.get(i), positions.get(i + 1));
-		}
-		
-		//Reset lists after use
-		messages = new ArrayList<String>();
-		positions = new ArrayList<Integer>();
 	}
 }

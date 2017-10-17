@@ -1,35 +1,13 @@
-/*Ideas and Notes:
- * 
- * Alter similarity threshold to increase accuracy.
- * 
- * Use multi-threading to process images quicker.
- * 
- * Pack GUI instead of setting size.
- * 
- * Merge ImageDisplay and CaptureGUI.
- */
-
 import java.awt.Color;
 import java.awt.image.BufferedImage;
-import java.io.File;
-import java.io.IOException;
-
-import org.opencv.core.Core;
-import org.opencv.core.DMatch;
-import org.opencv.core.Mat;
-import org.opencv.core.MatOfDMatch;
-import org.opencv.core.MatOfKeyPoint;
-import org.opencv.core.MatOfRect;
-import org.opencv.core.Point;
-import org.opencv.core.Rect;
-import org.opencv.core.Scalar;
-import org.opencv.features2d.DescriptorExtractor;
-import org.opencv.features2d.DescriptorMatcher;
-import org.opencv.features2d.FeatureDetector;
+import java.io.*;
+import org.opencv.core.*;
+import org.opencv.features2d.*;
 import org.opencv.imgcodecs.Imgcodecs;
 import org.opencv.imgproc.Imgproc;
 import org.opencv.objdetect.CascadeClassifier;
 import org.opencv.videoio.VideoCapture;
+import org.opencv.videoio.Videoio;
 
 public class FacialRecognition
 {
@@ -41,7 +19,7 @@ public class FacialRecognition
 		driver.start();
 	}
 	
-	public void start()
+	public void start()	
 	{
 		//Load OpenCV
 		System.loadLibrary(Core.NATIVE_LIBRARY_NAME);
@@ -52,27 +30,34 @@ public class FacialRecognition
 		//Exit
 		System.exit(0);
 	}
-		
+	
 	public void capture()
 	{
 		//Local variables
-	    Mat rawImage = new Mat();
-	    Mat newImage = new Mat();
+	    Mat rawImage = new Mat(), newImage = new Mat();
 	    BufferedImage convertedImage;
-	    MatToImg converter = new MatToImg();
 	    ImageDisplay display = new ImageDisplay();
 		CaptureGUI frame = new CaptureGUI(display);
+		CascadeClassifier faceDetector = new CascadeClassifier("lbpcascade_frontalface_improved.xml");
 	    
 	    //Start camera
 	    VideoCapture camera = new VideoCapture(0);
-
+	    camera.set(Videoio.CAP_PROP_FRAME_WIDTH, 640);
+	    camera.set(Videoio.CAP_PROP_FRAME_HEIGHT, 480);
+	    
+		//Wait for camera to get images
+	    while (rawImage.empty())
+	    {
+			camera.read(rawImage);
+	    }
+	    
 	    //While frame is not closed
     	while (frame.getStatus())
     	{
     		camera.read(rawImage);
-			newImage = detectFaces(rawImage, frame, display);
-			converter.setMatrix(newImage, ".png");
-			convertedImage = converter.getBufferedImage();
+			newImage = detectFaces(rawImage, frame, display, faceDetector);
+			Imgproc.cvtColor(newImage, newImage, Imgproc.COLOR_BGR2RGB);
+			convertedImage = convertMatToImage(newImage);
 			display.setImage(convertedImage);
 			display.repaint();
     	}
@@ -81,14 +66,32 @@ public class FacialRecognition
     	camera.release();
 	}
 	
- 	public Mat detectFaces(Mat image, CaptureGUI frame, ImageDisplay display)
+	public BufferedImage convertMatToImage(Mat matrix)
+	{
+        BufferedImage out;
+        int width = matrix.width();
+        int height = matrix.height();
+        int type = BufferedImage.TYPE_BYTE_GRAY;
+        byte[] data = new byte[width * height * (int)matrix.elemSize()];
+        
+        matrix.get(0, 0, data);
+
+        if(matrix.channels() != 1)
+            type = BufferedImage.TYPE_3BYTE_BGR;
+
+        out = new BufferedImage(width, height, type);
+        out.getRaster().setDataElements(0, 0, width, height, data);
+        return out;	
+	}
+	
+ 	public Mat detectFaces(Mat image, CaptureGUI frame, ImageDisplay display, CascadeClassifier faceDetector)
 	{
 		//Local variables
-		CascadeClassifier faceDetector = new CascadeClassifier("lbpcascade_frontalface.xml");
 		MatOfRect faceDetections = new MatOfRect();
 		Rect faceRect = null;
 		Mat croppedImage;
 		Color color = frame.getTextColor();
+		Scalar currentColor = new Scalar(color.getBlue(), color.getGreen(), color.getRed());
 		
 		//Detect faces in image
 		faceDetector.detectMultiScale(image, faceDetections);
@@ -101,7 +104,7 @@ public class FacialRecognition
 		{			
 			faceRect = new Rect(rect.x, rect.y, rect.width, rect.height);
 			
-			if (!(faceRect == null))
+			if (faceRect != null)
 			{
 				//Crop image to detection
 				croppedImage = new Mat(image, faceRect);
@@ -113,10 +116,10 @@ public class FacialRecognition
 				display.setMessage("ID: " + identifyFace(croppedImage), rect.x + 8, rect.y - 1, color);
 			}
 			
-			//Draw rectangle onto image
+			//Draw detection
 			Imgproc.rectangle(image, new Point(rect.x, rect.y), 
 					new Point(rect.x + rect.width, rect.y + rect.height),
-					new Scalar(color.getBlue(), color.getGreen(), color.getRed())); //Blue, Green, Red
+					currentColor);
 		}
 		return image;
 	}
@@ -127,6 +130,7 @@ public class FacialRecognition
 		String name;
 		String faceID = "???";
 		int similarities = 0;
+		int error = 3;
 		
 		//Refresh files
 		captures = FileSaver.getFiles();
@@ -149,7 +153,7 @@ public class FacialRecognition
 			}
 			
 			//Margin of error
-			if (similarities > 7)
+			if (similarities > error)
 			{
 				faceID = name;
 				break;
@@ -189,13 +193,13 @@ public class FacialRecognition
 			//Check matches of key points
 			matcher.match(descriptors1, descriptors2, matches);
 			match = matches.toArray();
-
+			
 			//Determine similarity
 			for (int i = 0; i < descriptors1.rows(); i++) 
 			{
 				//at 10, Lena != Lena
 				//at 100, face == Lena
-				if (match[i].distance <= 60)
+				if (match[i].distance <= 80)
 					similarity++;
 			}
 		}
