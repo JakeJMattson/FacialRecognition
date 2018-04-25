@@ -1,3 +1,5 @@
+package facialrecognition;
+
 import java.io.File;
 
 import org.opencv.core.Mat;

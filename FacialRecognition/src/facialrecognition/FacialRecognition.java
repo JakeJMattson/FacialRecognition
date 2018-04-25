@@ -1,3 +1,5 @@
+package facialrecognition;
+
 import java.awt.Font;
 import java.io.File;
 
@@ -142,7 +144,7 @@ public class FacialRecognition
 		extractor.compute(currentImage, keypoints1, descriptors1);
 		extractor.compute(compareImage, keypoints2, descriptors2);
 
-		if (descriptors2.cols() == descriptors1.cols())
+		if (descriptors1.cols() == descriptors2.cols())
 		{
 			//Check matches of key points
 			MatOfDMatch matches = new MatOfDMatch();
