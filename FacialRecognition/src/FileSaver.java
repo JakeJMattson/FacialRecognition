@@ -1,42 +1,47 @@
 import java.io.File;
+
 import org.opencv.core.Mat;
 import org.opencv.imgcodecs.Imgcodecs;
 
 public final class FileSaver
 {
-	private static final String FOLDER_NAME = "Captures";
-	private static File databasePath = new File(FOLDER_NAME);
+	private static final File DATABASE = new File("Captures");
 	private static final String EXTENSION = ".png";
 	private static String path;
-	
-	public static void setName(String personName)
-	{
-		setValidPath(personName);
-	}
-	
-	private static void setValidPath(String name)
+
+	public static void setName(String name)
 	{
 		//Create folder to store saved faces
-		if (!databasePath.exists())
-			databasePath.mkdir();
-		
+		if (!DATABASE.exists())
+			DATABASE.mkdir();
+
 		//Avoid overwriting files by adding a space to a repeated name
-		while ((new File(databasePath + "/" + name + EXTENSION)).exists())
+		File destination;
+		boolean foundValidPath = false;
+
+		do
 		{
-			name += " ";
-		}
-		path = databasePath + "/" + name + EXTENSION;
+			destination = new File(DATABASE + "/" + name + EXTENSION);
+
+			if (!destination.exists())
+				foundValidPath = true;
+			else
+				name += " ";
+
+		} while (!foundValidPath);
+
+		path = destination.getAbsolutePath();
 	}
-	
+
 	public static void save(Mat image)
 	{
 		if (path != null)
 			Imgcodecs.imwrite(path, image);
-		
+
 		//Set path to null after saving to limit to 1 save
 		path = null;
 	}
-	
+
 	public static String getExtension()
 	{
 		return EXTENSION;
@@ -44,6 +49,6 @@ public final class FileSaver
 
 	public static File[] getFiles()
 	{
-		return databasePath.listFiles();
+		return DATABASE.listFiles();
 	}
 }
