@@ -9,13 +9,13 @@ import org.opencv.core.*;
 import org.opencv.imgproc.Imgproc;
 
 @SuppressWarnings("serial")
-public class CaptureGUI extends JFrame
+public class DisplayFrame extends JFrame
 		implements ActionListener
 {
 	private boolean isOpen;
 	private Color color;
 
-	private ImageDisplay imagePanel;
+	private ImagePanel imagePanel;
 	private JTextField txtFileName;
 	private JButton btnSaveFile;
 	private JButton btnSetColor;
@@ -23,7 +23,7 @@ public class CaptureGUI extends JFrame
 	private final Color DEFAULT_COLOR = Color.BLUE;
 	private final JComboBox<String> colorDropDown = new JComboBox<>();
 
-	public CaptureGUI()
+	public DisplayFrame()
 	{
 		color = DEFAULT_COLOR;
 		buildGUI();
@@ -35,7 +35,7 @@ public class CaptureGUI extends JFrame
 		addWindowListener(createWindowListener());
 		setLayout(new BorderLayout());
 
-		imagePanel = new ImageDisplay();
+		imagePanel = new ImagePanel();
 
 		add("Center", imagePanel);
 		add("South", createToolbarPanel());

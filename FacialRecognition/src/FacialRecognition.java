@@ -6,7 +6,7 @@ import org.opencv.features2d.*;
 import org.opencv.imgcodecs.Imgcodecs;
 import org.opencv.imgproc.Imgproc;
 import org.opencv.objdetect.CascadeClassifier;
-import org.opencv.videoio.*;
+import org.opencv.videoio.VideoCapture;
 
 public class FacialRecognition
 {
@@ -33,12 +33,10 @@ public class FacialRecognition
 		CascadeClassifier faceDetector = new CascadeClassifier("lbpcascade_frontalface_improved.xml");
 
 		//Create display
-		CaptureGUI frame = new CaptureGUI();
+		DisplayFrame frame = new DisplayFrame();
 
 		//Start camera
 		VideoCapture camera = new VideoCapture(0);
-		camera.set(Videoio.CAP_PROP_FRAME_WIDTH, 1080);
-		camera.set(Videoio.CAP_PROP_FRAME_HEIGHT, 720);
 
 		//While frame is not closed
 		while (frame.isOpen() && camera.isOpened())
