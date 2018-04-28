@@ -1,3 +1,8 @@
+/**
+ * Class Description:
+ * File IO - Save images to disk
+ */
+
 package facialrecognition;
 
 import java.io.File;

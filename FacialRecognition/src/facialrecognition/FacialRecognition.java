@@ -1,3 +1,10 @@
+/**
+ * Project Description:
+ * My first OpenCV project - practicing with facial recognition
+ * Class Description:
+ * Demo (main) class to run functions
+ */
+
 package facialrecognition;
 
 import java.awt.Font;
@@ -41,7 +48,7 @@ public class FacialRecognition
 		CascadeClassifier faceDetector = new CascadeClassifier("lbpcascade_frontalface_improved.xml");
 
 		//Create display
-		DisplayFrame frame = new DisplayFrame();
+		ImageFrame frame = new ImageFrame();
 
 		//Start camera
 		VideoCapture camera = new VideoCapture(0);

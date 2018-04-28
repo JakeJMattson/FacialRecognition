@@ -1,3 +1,8 @@
+/**
+ * Class Description:
+ * Load the OpenCV library (used when program is run as JAR)
+ */
+
 package facialrecognition;
 
 import java.io.*;

@@ -1,3 +1,8 @@
+/**
+ * Class Description:
+ * Frame - GUI container for components (holds ImagePanel)
+ */
+
 package facialrecognition;
 
 import java.awt.*;
@@ -11,7 +16,7 @@ import org.opencv.core.*;
 import org.opencv.imgproc.Imgproc;
 
 @SuppressWarnings("serial")
-public class DisplayFrame extends JFrame
+public class ImageFrame extends JFrame
 		implements ActionListener
 {
 	private boolean isOpen;
@@ -25,7 +30,7 @@ public class DisplayFrame extends JFrame
 	private final Color DEFAULT_COLOR = Color.BLUE;
 	private final JComboBox<String> colorDropDown = new JComboBox<>();
 
-	public DisplayFrame()
+	public ImageFrame()
 	{
 		color = DEFAULT_COLOR;
 		buildGUI();
