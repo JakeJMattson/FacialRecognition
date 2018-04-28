@@ -3,6 +3,8 @@ package facialrecognition;
 import java.awt.Font;
 import java.io.File;
 
+import javax.swing.JOptionPane;
+
 import org.opencv.core.*;
 import org.opencv.features2d.*;
 import org.opencv.imgcodecs.Imgcodecs;
@@ -21,12 +23,16 @@ public class FacialRecognition
 	public void start()
 	{
 		//Load OpenCV
-		System.loadLibrary(Core.NATIVE_LIBRARY_NAME);
+		boolean isLoaded = LibraryLoader.loadLibrary(LibraryLoader.IDE);
 
-		//Begin Capture
-		capture();
+		//Run program
+		if (isLoaded)
+			capture();
+		else
+			displayFatalError("Failed to load OpenCV!");
 
-		//Exit
+		//Force exit
+		System.out.print("Program terminated.");
 		System.exit(0);
 	}
 
@@ -159,5 +165,10 @@ public class FacialRecognition
 		}
 
 		return similarity;
+	}
+
+	private void displayFatalError(String message)
+	{
+		JOptionPane.showMessageDialog(null, message, "Fatal Error", JOptionPane.ERROR_MESSAGE);
 	}
 }
