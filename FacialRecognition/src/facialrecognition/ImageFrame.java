@@ -16,19 +16,20 @@ import org.opencv.core.*;
 import org.opencv.imgproc.Imgproc;
 
 @SuppressWarnings("serial")
-public class ImageFrame extends JFrame
-		implements ActionListener
+public class ImageFrame extends JFrame implements ActionListener
 {
 	private boolean isOpen;
 	private Color color;
 
+	//Components
 	private ImagePanel imagePanel;
 	private JTextField txtFileName;
 	private JButton btnSaveFile;
 	private JButton btnSetColor;
+	private JComboBox<String> colorDropDown;
 
+	//Class constants
 	private final Color DEFAULT_COLOR = Color.BLUE;
-	private final JComboBox<String> colorDropDown = new JComboBox<>();
 
 	public ImageFrame()
 	{
@@ -38,15 +39,19 @@ public class ImageFrame extends JFrame
 
 	private void buildGUI()
 	{
-		setTitle("Facial Recognition");
+		//Set frame preferences
 		addWindowListener(createWindowListener());
+		setTitle("Facial Recognition");
 		setLayout(new BorderLayout());
 
+		//Create panel for image
 		imagePanel = new ImagePanel();
 
+		//Add panels to frame
 		add("Center", imagePanel);
 		add("South", createToolbarPanel());
 
+		//Show frame
 		setVisible(true);
 		isOpen = true;
 	}
@@ -68,7 +73,7 @@ public class ImageFrame extends JFrame
 	private JPanel createToolbarPanel()
 	{
 		//Create panels
-		JPanel toolbarPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
+		JPanel toolbarPanel = new JPanel(new FlowLayout());
 		JPanel savePanel = createSavePanel();
 		JPanel colorPanel = createColorPanel();
 
@@ -81,25 +86,21 @@ public class ImageFrame extends JFrame
 
 	private JPanel createSavePanel()
 	{
-		//Create panel
-		JPanel savePanel = new JPanel();
+		//Create panels
+		JPanel namePanel = new JPanel(new GridLayout(0, 2));
+		JPanel savePanel = new JPanel(new FlowLayout());
 		savePanel.setBorder(BorderFactory.createLineBorder(Color.black));
 
 		//Create GUI components
 		JLabel lblFileName = new JLabel("Name of person in frame: ");
-		JLabel lblExtension = new JLabel(FileSaver.getExtension());
-
-		//Instantiate GUI components
 		txtFileName = new JTextField("");
 		btnSaveFile = new JButton("Save Face");
-
-		txtFileName.setPreferredSize(new Dimension(150, 24));
 		btnSaveFile.addActionListener(this);
 
 		//Add components to panel
-		savePanel.add(lblFileName);
-		savePanel.add(txtFileName);
-		savePanel.add(lblExtension);
+		namePanel.add(lblFileName);
+		namePanel.add(txtFileName);
+		savePanel.add(namePanel);
 		savePanel.add(btnSaveFile);
 
 		return savePanel;
@@ -109,18 +110,18 @@ public class ImageFrame extends JFrame
 	{
 		//Create panel
 		JPanel colorPanel = new JPanel();
+		colorPanel.setBorder(BorderFactory.createLineBorder(Color.black));
 
-		//Local variables
+		//Drop down options
 		String[] colors = {"BLUE", "CYAN", "GREEN", "MAGENTA", "ORANGE", "RED"};
 
 		//Instantiate GUI components
-		for (String color : colors)
-			colorDropDown.addItem(color);
-
+		colorDropDown = new JComboBox<>();
 		btnSetColor = new JButton("Set Color");
 		btnSetColor.addActionListener(this);
 
-		colorPanel.setBorder(BorderFactory.createLineBorder(Color.black));
+		for (String color : colors)
+			colorDropDown.addItem(color);
 
 		//Add components to panel
 		colorPanel.add(colorDropDown);
@@ -141,10 +142,8 @@ public class ImageFrame extends JFrame
 
 	public void showImage(Mat image)
 	{
-		BufferedImage convertedImage = convertMatToImage(image);
-
 		//Send image to panel
-		imagePanel.setImage(convertedImage);
+		imagePanel.setImage(convertMatToImage(image));
 
 		//Resize frame to fit image
 		pack();
@@ -182,12 +181,10 @@ public class ImageFrame extends JFrame
 	public void actionPerformed(ActionEvent click)
 	{
 		if (click.getSource() == btnSetColor)
-		{
-			Field field;
 			try
 			{
 				//Get color from string name
-				field = Class.forName("java.awt.Color").getField((String) colorDropDown.getSelectedItem());
+				Field field = Class.forName("java.awt.Color").getField((String) colorDropDown.getSelectedItem());
 				color = (Color) field.get(null);
 			}
 			catch (NoSuchFieldException | SecurityException | ClassNotFoundException | IllegalArgumentException
@@ -196,8 +193,6 @@ public class ImageFrame extends JFrame
 				color = DEFAULT_COLOR;
 				e.printStackTrace();
 			}
-		}
-
 		else if (click.getSource() == btnSaveFile)
 			FileSaver.setName(txtFileName.getText());
 	}

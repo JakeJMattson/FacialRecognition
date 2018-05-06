@@ -12,9 +12,11 @@ import org.opencv.imgcodecs.Imgcodecs;
 
 public final class FileSaver
 {
+	private static String path;
+
+	//Class constants
 	private static final File DATABASE = new File("Database");
 	private static final String EXTENSION = ".png";
-	private static String path;
 
 	public static void setName(String name)
 	{
@@ -58,11 +60,6 @@ public final class FileSaver
 
 		//Set path to null after saving to limit to 1 save
 		path = null;
-	}
-
-	public static String getExtension()
-	{
-		return EXTENSION;
 	}
 
 	public static File[] getFiles()

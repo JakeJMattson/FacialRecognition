@@ -45,6 +45,7 @@ public class FacialRecognition
 
 	public void capture()
 	{
+		//Load file to detect faces
 		CascadeClassifier faceDetector = new CascadeClassifier("lbpcascade_frontalface_improved.xml");
 
 		//Create display
@@ -56,14 +57,17 @@ public class FacialRecognition
 		//While frame is not closed
 		while (frame.isOpen() && camera.isOpened())
 		{
+			//Get image from camera
 			Mat rawImage = new Mat();
 			camera.read(rawImage);
 
 			if (rawImage.empty())
 				break;
 
+			//Detect and label faces
 			Mat newImage = detectFaces(rawImage, faceDetector, frame.getTextColor());
 
+			//Display result
 			frame.showImage(newImage);
 		}
 
