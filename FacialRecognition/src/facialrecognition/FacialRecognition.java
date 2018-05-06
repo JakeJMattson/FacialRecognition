@@ -130,7 +130,10 @@ public class FacialRecognition
 
 		//Margin of error
 		if (mostSimilar > errorThreshold)
-			faceID = faceID.substring(0, faceID.indexOf(".")).trim();
+			if (faceID.indexOf(" (") == -1)
+				faceID = faceID.substring(0, faceID.indexOf(".")).trim();
+			else
+				faceID = faceID.substring(0, faceID.indexOf("(")).trim();
 		else
 			faceID = "???";
 

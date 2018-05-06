@@ -12,30 +12,41 @@ import org.opencv.imgcodecs.Imgcodecs;
 
 public final class FileSaver
 {
-	private static final File DATABASE = new File("Captures");
+	private static final File DATABASE = new File("Database");
 	private static final String EXTENSION = ".png";
 	private static String path;
 
 	public static void setName(String name)
 	{
-		//Create folder to store saved faces
-		if (!DATABASE.exists())
-			DATABASE.mkdir();
-
-		//Avoid overwriting files by adding a space to a repeated name
+		//Avoid overwriting files by adding numbers to a duplicate
 		File destination;
-		boolean foundValidPath = false;
 
-		do
+		//Create potential files
+		File basic = new File(DATABASE + "/" + name + EXTENSION);
+		File firstIndexed = new File(DATABASE + "/" + name + " (1)" + EXTENSION);
+
+		if (!basic.exists())
+			destination = basic;
+		else if (!firstIndexed.exists())
+			destination = firstIndexed;
+		else
 		{
-			destination = new File(DATABASE + "/" + name + EXTENSION);
+			File[] files = DATABASE.listFiles();
+			String fileName = "";
 
-			if (!destination.exists())
-				foundValidPath = true;
-			else
-				name += " ";
+			//Find last duplicate file name
+			for (File file : files)
+				if (file.getName().startsWith(name + " ("))
+					fileName = file.getName();
 
-		} while (!foundValidPath);
+			//Determine new file number
+			String lastNum = fileName.substring(fileName.indexOf("(") + 1, fileName.indexOf(")"));
+			int nextNum = Integer.parseInt(lastNum) + 1;
+			String duplication = " (" + nextNum + ")";
+
+			//Create new file
+			destination = new File(DATABASE + "/" + name + duplication + EXTENSION);
+		}
 
 		path = destination.getAbsolutePath();
 	}
@@ -56,6 +67,10 @@ public final class FileSaver
 
 	public static File[] getFiles()
 	{
+		//Create folder to store saved faces
+		if (!DATABASE.exists())
+			DATABASE.mkdir();
+
 		return DATABASE.listFiles();
 	}
 }
