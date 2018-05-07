@@ -29,7 +29,7 @@ public class ImageFrame extends JFrame implements ActionListener
 	private JComboBox<String> colorDropDown;
 
 	//Class constants
-	private final Color DEFAULT_COLOR = Color.BLUE;
+	private final static Color DEFAULT_COLOR = Color.BLUE;
 
 	public ImageFrame()
 	{

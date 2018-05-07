@@ -20,34 +20,21 @@ public final class FileSaver
 
 	public static void setName(String name)
 	{
-		//Avoid overwriting files by adding numbers to a duplicate
 		File destination;
 
-		//Create potential files
+		//Simplest file name
 		File basic = new File(DATABASE + "/" + name + EXTENSION);
-		File firstIndexed = new File(DATABASE + "/" + name + " (1)" + EXTENSION);
 
 		if (!basic.exists())
 			destination = basic;
-		else if (!firstIndexed.exists())
-			destination = firstIndexed;
 		else
 		{
-			File[] files = DATABASE.listFiles();
-			String fileName = "";
+			int index = 0;
 
-			//Find last duplicate file name
-			for (File file : files)
-				if (file.getName().startsWith(name + " ("))
-					fileName = file.getName();
-
-			//Determine new file number
-			String lastNum = fileName.substring(fileName.indexOf("(") + 1, fileName.indexOf(")"));
-			int nextNum = Integer.parseInt(lastNum) + 1;
-			String duplication = " (" + nextNum + ")";
-
-			//Create new file
-			destination = new File(DATABASE + "/" + name + duplication + EXTENSION);
+			//Avoid overwriting files by adding numbers to a duplicate
+			do
+				destination = new File(DATABASE + "/" + name + " (" + index++ + ")" + EXTENSION);
+			while (destination.exists());
 		}
 
 		path = destination.getAbsolutePath();
