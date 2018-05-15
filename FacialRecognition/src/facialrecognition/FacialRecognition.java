@@ -153,14 +153,15 @@ public class FacialRecognition
 		//Images to compare
 		Mat compareImage = Imgcodecs.imread(fileName);
 
-		FeatureDetector detector = FeatureDetector.create(FeatureDetector.ORB);
-		DescriptorExtractor extractor = DescriptorExtractor.create(DescriptorExtractor.ORB);
-		MatOfKeyPoint keypoints1 = new MatOfKeyPoint(), keypoints2 = new MatOfKeyPoint();
-		Mat descriptors1 = new Mat(), descriptors2 = new Mat();
-
 		//Detect key points
+		MatOfKeyPoint keypoints1 = new MatOfKeyPoint(), keypoints2 = new MatOfKeyPoint();
+		FastFeatureDetector detector = FastFeatureDetector.create();
 		detector.detect(currentImage, keypoints1);
 		detector.detect(compareImage, keypoints2);
+
+		//Extract descriptors from key points
+		DescriptorExtractor extractor = DescriptorExtractor.create(DescriptorExtractor.ORB);
+		Mat descriptors1 = new Mat(), descriptors2 = new Mat();
 		extractor.compute(currentImage, keypoints1, descriptors1);
 		extractor.compute(compareImage, keypoints2, descriptors2);
 
