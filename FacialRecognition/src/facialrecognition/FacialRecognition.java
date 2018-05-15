@@ -153,7 +153,6 @@ public class FacialRecognition
 		return faceID;
 	}
 
-	@SuppressWarnings("deprecation")
 	public int compareFaces(Mat currentImage, String fileName)
 	{
 		//Local variables
@@ -162,17 +161,18 @@ public class FacialRecognition
 		//Images to compare
 		Mat compareImage = Imgcodecs.imread(fileName);
 
+		//Create key point detector and descriptor extractor
+		ORB orb = ORB.create();
+
 		//Detect key points
 		MatOfKeyPoint keypoints1 = new MatOfKeyPoint(), keypoints2 = new MatOfKeyPoint();
-		FastFeatureDetector detector = FastFeatureDetector.create();
-		detector.detect(currentImage, keypoints1);
-		detector.detect(compareImage, keypoints2);
+		orb.detect(currentImage, keypoints1);
+		orb.detect(compareImage, keypoints2);
 
-		//Extract descriptors from key points
-		DescriptorExtractor extractor = DescriptorExtractor.create(DescriptorExtractor.ORB);
+		//Extract descriptors
 		Mat descriptors1 = new Mat(), descriptors2 = new Mat();
-		extractor.compute(currentImage, keypoints1, descriptors1);
-		extractor.compute(compareImage, keypoints2, descriptors2);
+		orb.compute(currentImage, keypoints1, descriptors1);
+		orb.compute(compareImage, keypoints2, descriptors2);
 
 		if (descriptors1.cols() == descriptors2.cols())
 		{
