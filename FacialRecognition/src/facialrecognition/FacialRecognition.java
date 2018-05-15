@@ -46,7 +46,16 @@ public class FacialRecognition
 	public void capture()
 	{
 		//Load file to detect faces
-		CascadeClassifier faceDetector = new CascadeClassifier("lbpcascade_frontalface_improved.xml");
+		File classifier = new File("lbpcascade_frontalface_improved.xml");
+		CascadeClassifier faceDetector = null;
+
+		if (classifier.exists())
+			faceDetector = new CascadeClassifier(classifier.toString());
+		else
+		{
+			displayFatalError("Unable to find classifier!");
+			return;
+		}
 
 		//Create display
 		ImageFrame frame = new ImageFrame();
