@@ -1,8 +1,3 @@
-/**
- * Class Description:
- * Load the OpenCV library (used when program is run as JAR)
- */
-
 package facialrecognition;
 
 import java.io.*;
@@ -11,18 +6,34 @@ import javax.swing.*;
 
 import org.opencv.core.Core;
 
+/**
+ * Load the OpenCV library (used when program is run as JAR)
+ *
+ * @author mattson543
+ */
 public final class LibraryLoader
 {
-	//Class constants
-	//(load types)
+	/**
+	 * The program is being launched from within an IDE
+	 */
 	public static final int IDE = 0;
+	/**
+	 * The program is being launched from within a JAR
+	 */
 	public static final int JAR = 1;
 
-	//(String constants)
+	//String constants
 	private static final String NEWLINE = System.lineSeparator();
 	private static final String INTERNAL_ERROR = "Internal Error";
 	private static final String USER_ERROR = "Try that again...";
 
+	/**
+	 * Initiate OpenCV loading based on the launch environment.
+	 *
+	 * @param loadType
+	 *            Launch environment (IDE or JAR)
+	 * @return Whether or not the operation was successful
+	 */
 	public static boolean loadLibrary(int loadType)
 	{
 		//Control flow
@@ -67,6 +78,14 @@ public final class LibraryLoader
 		return isSuccessful;
 	}
 
+	/**
+	 * Attempt to read a file containing the full OpenCV path.
+	 * Note: this will not exist on the first run.
+	 *
+	 * @param pathFile
+	 *            Path where the file is expected to be
+	 * @return Path from file (if read)
+	 */
 	private static String readFile(File pathFile)
 	{
 		//Path to library
@@ -96,6 +115,12 @@ public final class LibraryLoader
 		return libraryPath;
 	}
 
+	/**
+	 * Find the path from the base OpenCV directory to the core library file
+	 * based on the operating system.
+	 *
+	 * @return Library path
+	 */
 	private static String getLibraryPath()
 	{
 		//Get library path from user
@@ -198,6 +223,11 @@ public final class LibraryLoader
 		return libraryPath;
 	}
 
+	/**
+	 * Create a file chooser to let the user select the base OpenCV folder.
+	 *
+	 * @return OpenCV path
+	 */
 	private static String createChooser()
 	{
 		//Create file chooser
@@ -216,6 +246,14 @@ public final class LibraryLoader
 		return path;
 	}
 
+	/**
+	 * Write the OpenCV path to a file for future launches.
+	 *
+	 * @param pathFile
+	 *            File to contain the path
+	 * @param libraryPath
+	 *            Full path to OpenCV library
+	 */
 	private static void createFile(File pathFile, String libraryPath)
 	{
 		try
@@ -240,6 +278,13 @@ public final class LibraryLoader
 		}
 	}
 
+	/**
+	 * Load the OpenCV library into the system.
+	 *
+	 * @param libraryPath
+	 *            Full path to OpenCV library
+	 * @return Whether or not the operation was successful
+	 */
 	private static boolean load(String libraryPath)
 	{
 		File libraryFile = new File(libraryPath);

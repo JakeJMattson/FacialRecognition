@@ -18,11 +18,20 @@ import org.opencv.imgproc.Imgproc;
 @SuppressWarnings("serial")
 public class ImageFrame extends JFrame implements ActionListener
 {
+	/**
+	 * Whether or not the frame is currently open
+	 */
 	private boolean isOpen;
+	/**
+	 * Color to draw components (boxes, text, etc) in
+	 */
 	private Color color;
 
-	//Components
+	/**
+	 * Panel to hold/display a BufferedImage
+	 */
 	private ImagePanel imagePanel;
+
 	private JTextField txtFileName;
 	private JButton btnSaveFile;
 	private JButton btnSetColor;
@@ -37,6 +46,9 @@ public class ImageFrame extends JFrame implements ActionListener
 		buildGUI();
 	}
 
+	/**
+	 * Construct the display and its children.
+	 */
 	private void buildGUI()
 	{
 		//Set frame preferences
@@ -56,6 +68,11 @@ public class ImageFrame extends JFrame implements ActionListener
 		isOpen = true;
 	}
 
+	/**
+	 * Create a listener to monitor the frame closing event.
+	 *
+	 * @return WindowListener
+	 */
 	private WindowListener createWindowListener()
 	{
 		WindowListener listener = new WindowAdapter()
@@ -70,6 +87,11 @@ public class ImageFrame extends JFrame implements ActionListener
 		return listener;
 	}
 
+	/**
+	 * Create a panel to hold all non-image display elements.
+	 *
+	 * @return Panel
+	 */
 	private JPanel createToolbarPanel()
 	{
 		//Create panels
@@ -84,6 +106,11 @@ public class ImageFrame extends JFrame implements ActionListener
 		return toolbarPanel;
 	}
 
+	/**
+	 * Create a panel to display saving options to the user.
+	 *
+	 * @return Panel
+	 */
 	private JPanel createSavePanel()
 	{
 		//Create panels
@@ -106,6 +133,11 @@ public class ImageFrame extends JFrame implements ActionListener
 		return savePanel;
 	}
 
+	/**
+	 * Create a panel to display color options to the user.
+	 *
+	 * @return Panel
+	 */
 	private JPanel createColorPanel()
 	{
 		//Create panel
@@ -130,25 +162,51 @@ public class ImageFrame extends JFrame implements ActionListener
 		return colorPanel;
 	}
 
+	/**
+	 * Externally called to see if display frame is still open.
+	 *
+	 * @return Open status
+	 */
 	public boolean isOpen()
 	{
 		return isOpen;
 	}
 
+	/**
+	 * Return the selected text color as an OpenCV Scalar.
+	 *
+	 * @return Scalar
+	 */
 	public Scalar getTextColor()
 	{
 		return new Scalar(color.getBlue(), color.getGreen(), color.getRed());
 	}
 
+	/**
+	 * Display an image in the frame.
+	 *
+	 * @param image
+	 *            Image to be shown
+	 */
 	public void showImage(Mat image)
 	{
 		//Send image to panel
 		imagePanel.setImage(convertMatToImage(image));
 
+		//Redraw frame
+		this.repaint();
+
 		//Resize frame to fit image
 		pack();
 	}
 
+	/**
+	 * Convert OpenCV matrix to native Java BufferedImage.
+	 *
+	 * @param matrix
+	 *            OpenCV matrix
+	 * @return BufferedImage
+	 */
 	public BufferedImage convertMatToImage(Mat matrix)
 	{
 		//Get image dimensions
@@ -177,6 +235,11 @@ public class ImageFrame extends JFrame implements ActionListener
 		return out;
 	}
 
+	/*
+	 * (non-Javadoc)
+	 * @see
+	 * java.awt.event.ActionListener#actionPerformed(java.awt.event.ActionEvent)
+	 */
 	@Override
 	public void actionPerformed(ActionEvent click)
 	{

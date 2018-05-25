@@ -12,18 +12,29 @@ import org.opencv.imgcodecs.Imgcodecs;
 
 public final class FileSaver
 {
+	/**
+	 * Valid path to new File
+	 */
 	private static String path;
 
-	//Class constants
+	/**
+	 * Directory on the disk containing faces
+	 */
 	private static final File DATABASE = new File("Database");
-	private static final String EXTENSION = ".png";
 
+	/**
+	 * Converts a base (person) name to a non-duplicate file name.
+	 *
+	 * @param name
+	 *            Name of the person in the image
+	 */
 	public static void setName(String name)
 	{
 		File destination;
+		String extension = ".png";
 
 		//Simplest file name
-		File basic = new File(DATABASE + "/" + name + EXTENSION);
+		File basic = new File(DATABASE + "/" + name + extension);
 
 		if (!basic.exists())
 			destination = basic;
@@ -33,13 +44,19 @@ public final class FileSaver
 
 			//Avoid overwriting files by adding numbers to a duplicate
 			do
-				destination = new File(DATABASE + "/" + name + " (" + index++ + ")" + EXTENSION);
+				destination = new File(DATABASE + "/" + name + " (" + index++ + ")" + extension);
 			while (destination.exists());
 		}
 
 		path = destination.getAbsolutePath();
 	}
 
+	/**
+	 * Attempt to save a file to the database.
+	 *
+	 * @param image
+	 *            Image to be written to the file
+	 */
 	public static void save(Mat image)
 	{
 		if (path != null)
@@ -49,6 +66,11 @@ public final class FileSaver
 		path = null;
 	}
 
+	/**
+	 * Get an array of all files within the database.
+	 *
+	 * @return Files
+	 */
 	public static File[] getFiles()
 	{
 		//Create folder to store saved faces

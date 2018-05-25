@@ -1,8 +1,3 @@
-/**
- * Class Description:
- * Panel - holds image to display in GUI
- */
-
 package facialrecognition;
 
 import java.awt.*;
@@ -10,9 +5,17 @@ import java.awt.image.BufferedImage;
 
 import javax.swing.JPanel;
 
+/**
+ * Panel - holds image to display in GUI
+ *
+ * @author mattson543
+ */
 @SuppressWarnings("serial")
 public class ImagePanel extends JPanel
 {
+	/**
+	 * Image to be displayed to the user
+	 */
 	private BufferedImage image;
 
 	public ImagePanel()
@@ -22,13 +25,13 @@ public class ImagePanel extends JPanel
 
 	public void setImage(BufferedImage image)
 	{
-		//Save image
 		this.image = image;
-
-		//Draw image onto panel
-		this.repaint();
 	}
 
+	/*
+	 * (non-Javadoc)
+	 * @see javax.swing.JComponent#paintComponent(java.awt.Graphics)
+	 */
 	@Override
 	public void paintComponent(Graphics g)
 	{
