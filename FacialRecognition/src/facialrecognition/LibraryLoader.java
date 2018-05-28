@@ -7,21 +7,12 @@ import javax.swing.*;
 import org.opencv.core.Core;
 
 /**
- * Load the OpenCV library (used when program is run as JAR)
+ * Load the OpenCV library
  *
  * @author mattson543
  */
 public final class LibraryLoader
 {
-	/**
-	 * The program is being launched from within an IDE
-	 */
-	public static final int IDE = 0;
-	/**
-	 * The program is being launched from within a JAR
-	 */
-	public static final int JAR = 1;
-
 	//String constants
 	private static final String NEWLINE = System.lineSeparator();
 	private static final String INTERNAL_ERROR = "Internal Error";
@@ -30,16 +21,17 @@ public final class LibraryLoader
 	/**
 	 * Initiate OpenCV loading based on the launch environment.
 	 *
-	 * @param loadType
-	 *            Launch environment (IDE or JAR)
 	 * @return Whether or not the operation was successful
 	 */
-	public static boolean loadLibrary(int loadType)
+	public static boolean loadLibrary()
 	{
+		//Determines launch environment (IDE or JAR)
+		String environment = LibraryLoader.class.getResource("LibraryLoader.class").toString();
+
 		//Control flow
 		boolean isSuccessful = false;
 
-		if (loadType == IDE)
+		if (environment.startsWith("file"))
 		{
 			//Load library from user library
 			System.loadLibrary(Core.NATIVE_LIBRARY_NAME);
@@ -47,7 +39,7 @@ public final class LibraryLoader
 			//Mark load as successful
 			isSuccessful = true;
 		}
-		else if (loadType == JAR)
+		else if (environment.startsWith("jar") || environment.startsWith("rsrc"))
 		{
 			//Path to library
 			String libraryPath;

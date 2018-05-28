@@ -30,7 +30,7 @@ public class FacialRecognition
 	public void start()
 	{
 		//Load OpenCV
-		boolean isLoaded = LibraryLoader.loadLibrary(LibraryLoader.IDE);
+		boolean isLoaded = LibraryLoader.loadLibrary();
 
 		//Run program
 		if (isLoaded)
