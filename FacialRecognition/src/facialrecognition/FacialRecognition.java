@@ -63,6 +63,13 @@ public class FacialRecognition
 		//Start camera
 		VideoCapture camera = new VideoCapture(0);
 
+		//Do not start if no camera is available
+		if (!camera.isOpened())
+		{
+			displayFatalError("No camera detected!");
+			return;
+		}
+
 		//While frame is not closed
 		while (frame.isOpen() && camera.isOpened())
 		{
