@@ -29,3 +29,6 @@ Installing the Java Development Kit (JDK) is only a requirement for developers. 
 <p align="justify">
 <a href="https://opencv.org/">OpenCV</a> is required for both developers and users in order to run this code. Please read the tutorial on <a href="https://github.com/opencv-java/opencv-java-tutorials/blob/master/docs/source/01-installing-opencv-for-java.rst">Installing OpenCV for Java</a> in order to correctly build OpenCV for your operating system.
 </p>
+
+## License
+This project is licensed under the MIT License - see the [LICENSE.md](LICENSE.md) file for details
