@@ -1,4 +1,4 @@
-package facialrecognition;
+package io.github.mattson543.facialrecognition;
 
 import java.io.*;
 

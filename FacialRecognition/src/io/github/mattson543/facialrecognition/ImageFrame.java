@@ -1,9 +1,4 @@
-/**
- * Class Description:
- * Frame - GUI container for components (holds ImagePanel)
- */
-
-package facialrecognition;
+package io.github.mattson543.facialrecognition;
 
 import java.awt.*;
 import java.awt.event.*;
@@ -15,6 +10,11 @@ import javax.swing.*;
 import org.opencv.core.*;
 import org.opencv.imgproc.Imgproc;
 
+/**
+ * Frame - GUI container for components (holds ImagePanel)
+ *
+ * @author mattson543
+ */
 @SuppressWarnings("serial")
 public class ImageFrame extends JFrame implements ActionListener
 {

@@ -1,15 +1,15 @@
-/**
- * Class Description:
- * File IO - Save images to disk
- */
-
-package facialrecognition;
+package io.github.mattson543.facialrecognition;
 
 import java.io.File;
 
 import org.opencv.core.Mat;
 import org.opencv.imgcodecs.Imgcodecs;
 
+/**
+ * File IO - Save images to disk
+ *
+ * @author mattson543
+ */
 public final class FileSaver
 {
 	/**

@@ -1,11 +1,9 @@
 /**
  * Project Description:
- * My first OpenCV project - practicing with facial recognition
- * Class Description:
- * Demo (main) class to run functions
+ * Facial detection and recognition using OpenCV.
  */
 
-package facialrecognition;
+package io.github.mattson543.facialrecognition;
 
 import java.awt.Font;
 import java.io.File;
@@ -19,6 +17,11 @@ import org.opencv.imgproc.Imgproc;
 import org.opencv.objdetect.CascadeClassifier;
 import org.opencv.videoio.VideoCapture;
 
+/**
+ * Demo (main) class to run functions.
+ *
+ * @author mattson543
+ */
 public class FacialRecognition
 {
 	public static void main(String[] args)
