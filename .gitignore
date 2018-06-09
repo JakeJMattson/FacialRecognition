@@ -1,0 +1,23 @@
+### Eclipse ###
+.metadata
+.recommenders
+.settings/
+bin/
+tmp/
+*.tmp
+*.bak
+*.swp
+*~.nib
+local.properties
+.loadpath
+
+### Java ###
+# Binaries #
+*.class
+*.jar
+*.exe
+
+# Packages #
+*.zip
+*.tar.gz
+*.rar
