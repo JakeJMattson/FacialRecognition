@@ -24,6 +24,11 @@ import org.opencv.videoio.VideoCapture;
  */
 public class FacialRecognition
 {
+	/**
+	 * Directory on the disk containing faces
+	 */
+	private static final File DATABASE = new File("Database");
+
 	public static void main(String[] args)
 	{
 		FacialRecognition driver = new FacialRecognition();
@@ -73,6 +78,10 @@ public class FacialRecognition
 			return;
 		}
 
+		//Create folder to store saved faces
+		if (!DATABASE.exists())
+			DATABASE.mkdir();
+
 		//While frame is not closed
 		while (frame.isOpen() && camera.isOpened())
 		{
@@ -84,7 +93,7 @@ public class FacialRecognition
 				break;
 
 			//Detect and label faces
-			Mat newImage = detectFaces(rawImage, faceDetector, frame.getTextColor());
+			Mat newImage = detectFaces(rawImage, faceDetector, frame);
 
 			//Display result
 			frame.showImage(newImage);
@@ -94,20 +103,24 @@ public class FacialRecognition
 		camera.release();
 	}
 
-	public Mat detectFaces(Mat image, CascadeClassifier faceDetector, Scalar color)
+	public Mat detectFaces(Mat image, CascadeClassifier faceDetector, ImageFrame frame)
 	{
 		//Detect faces in image
 		MatOfRect faceDetections = new MatOfRect();
 		faceDetector.detectMultiScale(image, faceDetections);
 		Rect[] faces = faceDetections.toArray();
+		boolean shouldSave = frame.shouldSave();
+		String name = frame.getFileName();
+		Scalar color = frame.getTextColor();
 
 		for (Rect face : faces)
 		{
 			//Crop image to detection
 			Mat croppedImage = new Mat(image, face);
 
-			//Attempt to save face
-			FileSaver.save(croppedImage);
+			//Save face image to disk
+			if (shouldSave)
+				saveImage(croppedImage, name);
 
 			//Add ID above detection
 			Imgproc.putText(image, "ID: " + identifyFace(croppedImage), face.tl(), Font.BOLD, 1.5, color);
@@ -133,7 +146,7 @@ public class FacialRecognition
 		int mostSimilar = 0;
 
 		//Refresh files
-		File[] captures = FileSaver.getFiles();
+		File[] captures = DATABASE.listFiles();
 
 		//Check files for matches
 		for (File capture : captures)
@@ -199,6 +212,29 @@ public class FacialRecognition
 		}
 
 		return similarity;
+	}
+
+	private void saveImage(Mat image, String name)
+	{
+		File destination;
+		String extension = ".png";
+
+		//Simplest file name
+		File basic = new File(DATABASE + "/" + name + extension);
+
+		if (!basic.exists())
+			destination = basic;
+		else
+		{
+			int index = 0;
+
+			//Avoid overwriting files by adding numbers to a duplicate
+			do
+				destination = new File(DATABASE + "/" + name + " (" + index++ + ")" + extension);
+			while (destination.exists());
+		}
+
+		Imgcodecs.imwrite(destination.toString(), image);
 	}
 
 	private void displayFatalError(String message)

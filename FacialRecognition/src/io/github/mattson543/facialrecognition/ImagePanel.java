@@ -39,15 +39,11 @@ public class ImagePanel extends JPanel
 
 		if (image != null)
 		{
-			//Get image dimensions
-			int width = image.getWidth();
-			int height = image.getHeight();
-
 			//Draw image onto panel
-			g.drawImage(image, 0, 0, width, height, null);
+			g.drawImage(image, 0, 0, null);
 
 			//Set panel size
-			setPreferredSize(new Dimension(width, height));
+			setPreferredSize(new Dimension(image.getWidth(), image.getHeight()));
 		}
 	}
 }

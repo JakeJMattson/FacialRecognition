@@ -23,10 +23,13 @@ public class ImageFrame extends JFrame implements ActionListener
 	 */
 	private boolean isOpen;
 	/**
+	 * Whether or not the face should be saved to the disk
+	 */
+	private boolean shouldSave;
+	/**
 	 * Color to draw components (boxes, text, etc) in
 	 */
 	private Color color;
-
 	/**
 	 * Panel to hold/display a BufferedImage
 	 */
@@ -173,6 +176,29 @@ public class ImageFrame extends JFrame implements ActionListener
 	}
 
 	/**
+	 * Return whether or not the face in frame should be saved to the disk.
+	 * Set the state to false.
+	 *
+	 * @return state
+	 */
+	public boolean shouldSave()
+	{
+		boolean prevState = shouldSave;
+		shouldSave = false;
+		return prevState;
+	}
+
+	/**
+	 * Get the name of the person in frame (user input).
+	 *
+	 * @return name
+	 */
+	public String getFileName()
+	{
+		return txtFileName.getText();
+	}
+
+	/**
 	 * Return the selected text color as an OpenCV Scalar.
 	 *
 	 * @return Scalar
@@ -257,6 +283,6 @@ public class ImageFrame extends JFrame implements ActionListener
 				e.printStackTrace();
 			}
 		else if (click.getSource() == btnSaveFile)
-			FileSaver.setName(txtFileName.getText());
+			shouldSave = true;
 	}
 }
