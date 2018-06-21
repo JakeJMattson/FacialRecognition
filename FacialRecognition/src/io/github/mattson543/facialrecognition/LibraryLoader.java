@@ -1,6 +1,7 @@
 package io.github.mattson543.facialrecognition;
 
 import java.io.*;
+import java.nio.file.Files;
 
 import javax.swing.*;
 
@@ -83,16 +84,10 @@ public final class LibraryLoader
 		//Path to library
 		String libraryPath = null;
 
-		try
+		try (BufferedReader reader = new BufferedReader(new FileReader(pathFile)))
 		{
-			//Create reader
-			BufferedReader reader = new BufferedReader(new FileReader(pathFile));
-
 			//Get path from file
 			libraryPath = reader.readLine().trim();
-
-			//Close reader
-			reader.close();
 		}
 		catch (IOException e)
 		{
@@ -250,19 +245,12 @@ public final class LibraryLoader
 	{
 		try
 		{
-			//Create file writer
-			PrintWriter writer = new PrintWriter(pathFile, "UTF-8");
-
-			//Write path to file
-			writer.println(libraryPath);
-
-			//Save file and stop writing
-			writer.close();
+			Files.write(pathFile.toPath(), libraryPath.getBytes());
 		}
-		catch (FileNotFoundException | UnsupportedEncodingException e)
+		catch (IOException e)
 		{
 			//Construct error
-			String title = INTERNAL_ERROR + " (PrintWriter Error)";
+			String title = INTERNAL_ERROR + " (File write Error)";
 			String message = "Failed write path to file:" + NEWLINE
 					+ pathFile.getAbsolutePath();
 
@@ -301,18 +289,11 @@ public final class LibraryLoader
 			return false;
 		}
 
-		try
+		try (FileInputStream in = new FileInputStream(libraryFile.getAbsolutePath());
+				OutputStream out = new FileOutputStream(tempFile);)
 		{
-			//Create streams
-			FileInputStream in = new FileInputStream(libraryFile.getAbsolutePath());
-			OutputStream out = new FileOutputStream(tempFile);
-
 			//Write library data to file
 			in.transferTo(out);
-
-			//Close streams
-			in.close();
-			out.close();
 		}
 		catch (IOException e)
 		{
