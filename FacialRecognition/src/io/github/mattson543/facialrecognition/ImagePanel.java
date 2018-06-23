@@ -6,7 +6,7 @@ import java.awt.image.BufferedImage;
 import javax.swing.JPanel;
 
 /**
- * Panel - holds image to display in GUI
+ * Panel - holds image to display in GUI.
  *
  * @author mattson543
  */

@@ -141,9 +141,7 @@ public class FacialRecognition
 	{
 		//Local variables
 		String faceID = "";
-		int errorThreshold = 3;
-		int similarities = 0;
-		int mostSimilar = 0;
+		int errorThreshold = 3, mostSimilar = 0;
 
 		//Refresh files
 		File[] captures = DATABASE.listFiles();
@@ -152,7 +150,7 @@ public class FacialRecognition
 		for (File capture : captures)
 		{
 			//Calculate similarity between face on screen and face in database
-			similarities = compareFaces(image, capture.getAbsolutePath());
+			int similarities = compareFaces(image, capture.getAbsolutePath());
 
 			//Find most similar face in list
 			if (similarities > mostSimilar)
@@ -166,10 +164,10 @@ public class FacialRecognition
 
 		//Margin of error
 		if (mostSimilar > errorThreshold)
-			if (faceID.indexOf(" (") == -1)
-				faceID = faceID.substring(0, faceID.indexOf(".")).trim();
-			else
-				faceID = faceID.substring(0, faceID.indexOf("(")).trim();
+		{
+			String delimiter = faceID.indexOf(" (") == -1 ? "." : "(";
+			faceID = faceID.substring(0, faceID.indexOf(delimiter)).trim();
+		}
 		else
 			faceID = "???";
 
@@ -200,14 +198,14 @@ public class FacialRecognition
 		if (descriptors1.cols() == descriptors2.cols())
 		{
 			//Check matches of key points
-			MatOfDMatch matches = new MatOfDMatch();
+			MatOfDMatch matchMatrix = new MatOfDMatch();
 			DescriptorMatcher matcher = DescriptorMatcher.create(DescriptorMatcher.BRUTEFORCE_HAMMING);
-			matcher.match(descriptors1, descriptors2, matches);
-			DMatch[] match = matches.toArray();
+			matcher.match(descriptors1, descriptors2, matchMatrix);
+			DMatch[] matches = matchMatrix.toArray();
 
 			//Determine similarity
-			for (int i = 0; i < descriptors1.rows(); i++)
-				if (match[i].distance <= 50)
+			for (DMatch match : matches)
+				if (match.distance <= 50)
 					similarity++;
 		}
 

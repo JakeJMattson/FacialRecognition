@@ -8,7 +8,7 @@ import javax.swing.*;
 import org.opencv.core.Core;
 
 /**
- * Load the OpenCV library
+ * Load the OpenCV library.
  *
  * @author mattson543
  */
@@ -22,7 +22,7 @@ public final class LibraryLoader
 	/**
 	 * Initiate OpenCV loading based on the launch environment.
 	 *
-	 * @return Whether or not the operation was successful
+	 * @return Whether or not OpenCV was loaded
 	 */
 	public static boolean loadLibrary()
 	{
@@ -268,11 +268,11 @@ public final class LibraryLoader
 	private static boolean load(String libraryPath)
 	{
 		File libraryFile = new File(libraryPath);
-
 		File tempFile = null;
+
+		//Create temporary file
 		try
 		{
-			//Create temporary file
 			String name = libraryFile.getName();
 			String extension = name.substring(name.indexOf("."));
 			tempFile = File.createTempFile("lib", extension);
@@ -289,10 +289,10 @@ public final class LibraryLoader
 			return false;
 		}
 
+		//Write library data to file
 		try (FileInputStream in = new FileInputStream(libraryFile.getAbsolutePath());
-				OutputStream out = new FileOutputStream(tempFile);)
+				OutputStream out = new FileOutputStream(tempFile))
 		{
-			//Write library data to file
 			in.transferTo(out);
 		}
 		catch (IOException e)

@@ -11,7 +11,7 @@ import org.opencv.core.*;
 import org.opencv.imgproc.Imgproc;
 
 /**
- * Frame - GUI container for components (holds ImagePanel)
+ * Frame - GUI container for components (holds ImagePanel).
  *
  * @author mattson543
  */
@@ -36,8 +36,7 @@ public class ImageFrame extends JFrame implements ActionListener
 	private ImagePanel imagePanel;
 
 	private JTextField txtFileName;
-	private JButton btnSaveFile;
-	private JButton btnSetColor;
+	private JButton btnSaveFile, btnSetColor;
 	private JComboBox<String> colorDropDown;
 
 	//Class constants
@@ -99,8 +98,7 @@ public class ImageFrame extends JFrame implements ActionListener
 	{
 		//Create panels
 		JPanel toolbarPanel = new JPanel(new FlowLayout());
-		JPanel savePanel = createSavePanel();
-		JPanel colorPanel = createColorPanel();
+		JPanel savePanel = createSavePanel(), colorPanel = createColorPanel();
 
 		//Combine panels
 		toolbarPanel.add(savePanel);
@@ -227,28 +225,21 @@ public class ImageFrame extends JFrame implements ActionListener
 	}
 
 	/**
-	 * Convert OpenCV matrix to native Java BufferedImage.
+	 * Convert an OpenCV Mat to a Java BufferedImage.
 	 *
 	 * @param matrix
-	 *            OpenCV matrix
+	 *            OpenCV Mat
 	 * @return BufferedImage
 	 */
-	public BufferedImage convertMatToImage(Mat matrix)
+	private BufferedImage convertMatToImage(Mat matrix)
 	{
 		//Get image dimensions
-		int width = matrix.width();
-		int height = matrix.height();
+		int width = matrix.width(), height = matrix.height();
 
-		//Determine image type
-		int type;
+		int type = matrix.channels() != 1 ? BufferedImage.TYPE_3BYTE_BGR : BufferedImage.TYPE_BYTE_GRAY;
 
-		if (matrix.channels() != 1)
-		{
-			type = BufferedImage.TYPE_3BYTE_BGR;
+		if (type == BufferedImage.TYPE_3BYTE_BGR)
 			Imgproc.cvtColor(matrix, matrix, Imgproc.COLOR_BGR2RGB);
-		}
-		else
-			type = BufferedImage.TYPE_BYTE_GRAY;
 
 		//Get matrix data
 		byte[] data = new byte[width * height * (int) matrix.elemSize()];
@@ -263,26 +254,26 @@ public class ImageFrame extends JFrame implements ActionListener
 
 	/*
 	 * (non-Javadoc)
-	 * @see
-	 * java.awt.event.ActionListener#actionPerformed(java.awt.event.ActionEvent)
+	 * @see java.awt.event.ActionListener
+	 * #actionPerformed(java.awt.event.ActionEvent)
 	 */
 	@Override
 	public void actionPerformed(ActionEvent click)
 	{
-		if (click.getSource() == btnSetColor)
+		Object src = click.getSource();
+
+		if (src == btnSetColor)
 			try
 			{
 				//Get color from string name
-				Field field = Class.forName("java.awt.Color").getField((String) colorDropDown.getSelectedItem());
+				Field field = Color.class.getField((String) colorDropDown.getSelectedItem());
 				color = (Color) field.get(null);
 			}
-			catch (NoSuchFieldException | SecurityException | ClassNotFoundException | IllegalArgumentException
-					| IllegalAccessException e)
+			catch (NoSuchFieldException | IllegalAccessException e)
 			{
 				color = DEFAULT_COLOR;
-				e.printStackTrace();
 			}
-		else if (click.getSource() == btnSaveFile)
+		else if (src == btnSaveFile)
 			shouldSave = true;
 	}
 }
