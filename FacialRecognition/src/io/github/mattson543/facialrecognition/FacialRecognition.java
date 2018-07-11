@@ -47,7 +47,6 @@ public class FacialRecognition
 			displayFatalError("Failed to load OpenCV!");
 
 		//Force exit
-		System.out.print("Program terminated.");
 		System.exit(0);
 	}
 
@@ -217,8 +216,10 @@ public class FacialRecognition
 		File destination;
 		String extension = ".png";
 
+		String baseName = DATABASE + File.separator + name;
+
 		//Simplest file name
-		File basic = new File(DATABASE + "/" + name + extension);
+		File basic = new File(baseName + extension);
 
 		if (!basic.exists())
 			destination = basic;
@@ -228,7 +229,7 @@ public class FacialRecognition
 
 			//Avoid overwriting files by adding numbers to a duplicate
 			do
-				destination = new File(DATABASE + "/" + name + " (" + index++ + ")" + extension);
+				destination = new File(baseName + " (" + index++ + ")" + extension);
 			while (destination.exists());
 		}
 

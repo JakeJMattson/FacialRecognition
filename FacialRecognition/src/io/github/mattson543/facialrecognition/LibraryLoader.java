@@ -14,6 +14,11 @@ import org.opencv.core.Core;
  */
 public final class LibraryLoader
 {
+	private LibraryLoader()
+	{
+		throw new IllegalStateException("Utility class");
+	}
+
 	//String constants
 	private static final String NEWLINE = System.lineSeparator();
 	private static final String INTERNAL_ERROR = "Internal Error";
@@ -274,7 +279,7 @@ public final class LibraryLoader
 		try
 		{
 			String name = libraryFile.getName();
-			String extension = name.substring(name.indexOf("."));
+			String extension = name.substring(name.indexOf('.'));
 			tempFile = File.createTempFile("lib", extension);
 		}
 		catch (IOException e)

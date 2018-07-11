@@ -40,7 +40,7 @@ public class ImageFrame extends JFrame implements ActionListener
 	private JComboBox<String> colorDropDown;
 
 	//Class constants
-	private final static Color DEFAULT_COLOR = Color.BLUE;
+	private static final Color DEFAULT_COLOR = Color.BLUE;
 
 	public ImageFrame()
 	{
@@ -77,7 +77,7 @@ public class ImageFrame extends JFrame implements ActionListener
 	 */
 	private WindowListener createWindowListener()
 	{
-		WindowListener listener = new WindowAdapter()
+		return new WindowAdapter()
 		{
 			@Override
 			public void windowClosing(WindowEvent windowClosed)
@@ -85,8 +85,6 @@ public class ImageFrame extends JFrame implements ActionListener
 				isOpen = false;
 			}
 		};
-
-		return listener;
 	}
 
 	/**
@@ -146,15 +144,15 @@ public class ImageFrame extends JFrame implements ActionListener
 		colorPanel.setBorder(BorderFactory.createLineBorder(Color.black));
 
 		//Drop down options
-		String[] colors = {"BLUE", "CYAN", "GREEN", "MAGENTA", "ORANGE", "RED"};
+		String[] colorOptions = {"BLUE", "CYAN", "GREEN", "MAGENTA", "ORANGE", "RED"};
 
 		//Instantiate GUI components
 		colorDropDown = new JComboBox<>();
 		btnSetColor = new JButton("Set Color");
 		btnSetColor.addActionListener(this);
 
-		for (String color : colors)
-			colorDropDown.addItem(color);
+		for (String option : colorOptions)
+			colorDropDown.addItem(option);
 
 		//Add components to panel
 		colorPanel.add(colorDropDown);
