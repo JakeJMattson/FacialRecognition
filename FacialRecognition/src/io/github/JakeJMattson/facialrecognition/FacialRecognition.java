@@ -3,7 +3,7 @@
  * Facial detection and recognition using OpenCV.
  */
 
-package io.github.mattson543.facialrecognition;
+package io.github.JakeJMattson.facialrecognition;
 
 import java.awt.Font;
 import java.io.File;
@@ -20,7 +20,7 @@ import org.opencv.videoio.VideoCapture;
 /**
  * Demo (main) class to run functions.
  *
- * @author mattson543
+ * @author JakeJMattson
  */
 public class FacialRecognition
 {

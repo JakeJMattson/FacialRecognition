@@ -1,4 +1,4 @@
-package io.github.mattson543.facialrecognition;
+package io.github.JakeJMattson.facialrecognition;
 
 import java.awt.*;
 import java.awt.event.*;
@@ -13,7 +13,7 @@ import org.opencv.imgproc.Imgproc;
 /**
  * Frame - GUI container for components (holds ImagePanel).
  *
- * @author mattson543
+ * @author JakeJMattson
  */
 @SuppressWarnings("serial")
 public class ImageFrame extends JFrame implements ActionListener

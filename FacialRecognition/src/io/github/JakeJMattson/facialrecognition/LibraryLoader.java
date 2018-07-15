@@ -1,4 +1,4 @@
-package io.github.mattson543.facialrecognition;
+package io.github.JakeJMattson.facialrecognition;
 
 import java.io.*;
 import java.nio.file.Files;
@@ -10,7 +10,7 @@ import org.opencv.core.Core;
 /**
  * Load the OpenCV library.
  *
- * @author mattson543
+ * @author JakeJMattson
  */
 public final class LibraryLoader
 {
