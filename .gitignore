@@ -21,3 +21,6 @@ local.properties
 *.zip
 *.tar.gz
 *.rar
+
+### Project ###
+*.png
