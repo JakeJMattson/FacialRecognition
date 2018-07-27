@@ -8,7 +8,7 @@
   <a href="LICENSE.md">
     <img src="https://img.shields.io/github/license/JakeJMattson/FacialRecognition.svg">
   </a>
-  <a href="releases">
+  <a href="https://GitHub.com/JakeJMattson/FacialRecognition/releases">
     <img src="https://img.shields.io/github/release/JakeJMattson/FacialRecognition.svg" alt="release">
   </a>
 </p>
