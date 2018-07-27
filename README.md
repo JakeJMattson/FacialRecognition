@@ -6,10 +6,10 @@
     <img src="https://img.shields.io/badge/OpenCV-3.4.1-blue.svg">
   </a>
   <a href="LICENSE.md">
-    <img src="https://img.shields.io/github/license/mattson543/FacialRecognition.svg">
+    <img src="https://img.shields.io/github/license/JakeJMattson/FacialRecognition.svg">
   </a>
-  <a href="https://GitHub.com/mattson543/FacialRecognition/releases/">
-    <img src="https://img.shields.io/github/release/mattson543/FacialRecognition.svg" alt="release">
+  <a href="releases">
+    <img src="https://img.shields.io/github/release/JakeJMattson/FacialRecognition.svg" alt="release">
   </a>
 </p>
 
