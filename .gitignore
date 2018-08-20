@@ -1,15 +1,8 @@
-### Eclipse ###
-.metadata
-.recommenders
-.settings/
-bin/
-tmp/
-*.tmp
-*.bak
-*.swp
-*~.nib
-local.properties
-.loadpath
+### Intellij ###
+.idea/
+*.iml
+*.iws
+*.ipr
 
 ### Java ###
 # Binaries #
@@ -17,7 +10,7 @@ local.properties
 *.jar
 *.exe
 
-# Packages #
+# Package Files #
 *.zip
 *.tar.gz
 *.rar
