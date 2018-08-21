@@ -10,6 +10,7 @@ import java.io.File;
 
 import javax.swing.JOptionPane;
 
+import org.bytedeco.javacpp.*;
 import org.opencv.core.*;
 import org.opencv.features2d.*;
 import org.opencv.imgcodecs.Imgcodecs;
@@ -31,20 +32,11 @@ public class FacialRecognition
 
 	public static void main(String[] args)
 	{
-		FacialRecognition driver = new FacialRecognition();
-		driver.start();
-	}
-
-	public void start()
-	{
 		//Load OpenCV
-		boolean isLoaded = LibraryLoader.loadLibrary();
+		Loader.load(opencv_java.class);
 
-		//Run program
-		if (isLoaded)
-			capture();
-		else
-			displayFatalError("Failed to load OpenCV!");
+		//Start program (with debug mode switch)
+		new FacialRecognition().capture();
 
 		//Force exit
 		System.exit(0);
