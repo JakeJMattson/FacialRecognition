@@ -1,14 +1,14 @@
 package io.github.JakeJMattson.facialrecognition;
 
+import org.opencv.core.*;
+import org.opencv.imgproc.Imgproc;
+
+import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
 import java.awt.image.BufferedImage;
 import java.lang.reflect.Field;
-
-import javax.swing.*;
-
-import org.opencv.core.*;
-import org.opencv.imgproc.Imgproc;
+import java.util.Objects;
 
 /**
  * Frame - GUI container for components (holds ImagePanel).
@@ -16,7 +16,7 @@ import org.opencv.imgproc.Imgproc;
  * @author JakeJMattson
  */
 @SuppressWarnings("serial")
-public class ImageFrame extends JFrame implements ActionListener
+class ImageFrame implements ActionListener
 {
 	/**
 	 * Whether or not the frame is currently open
@@ -35,6 +35,7 @@ public class ImageFrame extends JFrame implements ActionListener
 	 */
 	private ImagePanel imagePanel;
 
+	private JFrame frame;
 	private JTextField txtFileName;
 	private JButton btnSaveFile, btnSetColor;
 	private JComboBox<String> colorDropDown;
@@ -42,7 +43,7 @@ public class ImageFrame extends JFrame implements ActionListener
 	//Class constants
 	private static final Color DEFAULT_COLOR = Color.BLUE;
 
-	public ImageFrame()
+	ImageFrame()
 	{
 		color = DEFAULT_COLOR;
 		buildGUI();
@@ -53,20 +54,21 @@ public class ImageFrame extends JFrame implements ActionListener
 	 */
 	private void buildGUI()
 	{
+		frame = new JFrame("Facial Recognition");
+
 		//Set frame preferences
-		addWindowListener(createWindowListener());
-		setTitle("Facial Recognition");
-		setLayout(new BorderLayout());
+		frame.addWindowListener(createWindowListener());
+		frame.setLayout(new BorderLayout());
 
 		//Create panel for image
 		imagePanel = new ImagePanel();
 
 		//Add panels to frame
-		add("Center", imagePanel);
-		add("South", createToolbarPanel());
+		frame.add("Center", imagePanel);
+		frame.add("South", createToolbarPanel());
 
 		//Show frame
-		setVisible(true);
+		frame.setVisible(true);
 		isOpen = true;
 	}
 
@@ -166,7 +168,7 @@ public class ImageFrame extends JFrame implements ActionListener
 	 *
 	 * @return Open status
 	 */
-	public boolean isOpen()
+	boolean isOpen()
 	{
 		return isOpen;
 	}
@@ -177,7 +179,7 @@ public class ImageFrame extends JFrame implements ActionListener
 	 *
 	 * @return state
 	 */
-	public boolean shouldSave()
+	boolean shouldSave()
 	{
 		boolean prevState = shouldSave;
 		shouldSave = false;
@@ -189,7 +191,7 @@ public class ImageFrame extends JFrame implements ActionListener
 	 *
 	 * @return name
 	 */
-	public String getFileName()
+	String getFileName()
 	{
 		return txtFileName.getText();
 	}
@@ -199,7 +201,7 @@ public class ImageFrame extends JFrame implements ActionListener
 	 *
 	 * @return Scalar
 	 */
-	public Scalar getTextColor()
+	Scalar getTextColor()
 	{
 		return new Scalar(color.getBlue(), color.getGreen(), color.getRed());
 	}
@@ -208,25 +210,26 @@ public class ImageFrame extends JFrame implements ActionListener
 	 * Display an image in the frame.
 	 *
 	 * @param image
-	 *            Image to be shown
+	 * 		Image to be shown
 	 */
-	public void showImage(Mat image)
+	void showImage(Mat image)
 	{
 		//Send image to panel
 		imagePanel.setImage(convertMatToImage(image));
 
 		//Redraw frame
-		this.repaint();
+		frame.repaint();
 
 		//Resize frame to fit image
-		pack();
+		frame.pack();
 	}
 
 	/**
 	 * Convert an OpenCV Mat to a Java BufferedImage.
 	 *
 	 * @param matrix
-	 *            OpenCV Mat
+	 * 		OpenCV Mat
+	 *
 	 * @return BufferedImage
 	 */
 	private BufferedImage convertMatToImage(Mat matrix)
@@ -264,7 +267,7 @@ public class ImageFrame extends JFrame implements ActionListener
 			try
 			{
 				//Get color from string name
-				Field field = Color.class.getField((String) colorDropDown.getSelectedItem());
+				Field field = Color.class.getField((String) Objects.requireNonNull(colorDropDown.getSelectedItem()));
 				color = (Color) field.get(null);
 			}
 			catch (NoSuchFieldException | IllegalAccessException e)

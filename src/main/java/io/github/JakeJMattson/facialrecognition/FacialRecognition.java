@@ -1,14 +1,9 @@
-/**
+/*
  * Project Description:
  * Facial detection and recognition using OpenCV.
  */
 
 package io.github.JakeJMattson.facialrecognition;
-
-import java.awt.Font;
-import java.io.File;
-
-import javax.swing.JOptionPane;
 
 import org.bytedeco.javacpp.*;
 import org.opencv.core.*;
@@ -18,12 +13,17 @@ import org.opencv.imgproc.Imgproc;
 import org.opencv.objdetect.CascadeClassifier;
 import org.opencv.videoio.VideoCapture;
 
+import javax.swing.JOptionPane;
+import java.awt.Font;
+import java.io.File;
+import java.util.Objects;
+
 /**
  * Demo (main) class to run functions.
  *
  * @author JakeJMattson
  */
-public class FacialRecognition
+class FacialRecognition
 {
 	/**
 	 * Directory on the disk containing faces
@@ -35,29 +35,25 @@ public class FacialRecognition
 		//Load OpenCV
 		Loader.load(opencv_java.class);
 
-		//Start program (with debug mode switch)
+		//Start program
 		new FacialRecognition().capture();
 
 		//Force exit
 		System.exit(0);
 	}
 
-	public void capture()
+	private void capture()
 	{
-		//Load file to detect faces
 		File classifier = new File("lbpcascade_frontalface_improved.xml");
-		CascadeClassifier faceDetector = null;
 
-		if (classifier.exists())
-			faceDetector = new CascadeClassifier(classifier.toString());
-		else
+		if (!classifier.exists())
 		{
 			displayFatalError("Unable to find classifier!");
 			return;
 		}
 
-		//Create display
-		ImageFrame frame = new ImageFrame();
+		//Load classifier to detect faces
+		CascadeClassifier faceDetector = new CascadeClassifier(classifier.toString());
 
 		//Start camera
 		VideoCapture camera = new VideoCapture(0);
@@ -73,15 +69,14 @@ public class FacialRecognition
 		if (!DATABASE.exists())
 			DATABASE.mkdir();
 
-		//While frame is not closed
+		//Create display
+		ImageFrame frame = new ImageFrame();
+
 		while (frame.isOpen() && camera.isOpened())
 		{
 			//Get image from camera
 			Mat rawImage = new Mat();
 			camera.read(rawImage);
-
-			if (rawImage.empty())
-				break;
 
 			//Detect and label faces
 			Mat newImage = detectFaces(rawImage, faceDetector, frame);
@@ -94,7 +89,7 @@ public class FacialRecognition
 		camera.release();
 	}
 
-	public Mat detectFaces(Mat image, CascadeClassifier faceDetector, ImageFrame frame)
+	private Mat detectFaces(Mat image, CascadeClassifier faceDetector, ImageFrame frame)
 	{
 		//Detect faces in image
 		MatOfRect faceDetections = new MatOfRect();
@@ -128,17 +123,14 @@ public class FacialRecognition
 		return image;
 	}
 
-	public String identifyFace(Mat image)
+	private String identifyFace(Mat image)
 	{
 		//Local variables
 		String faceID = "";
 		int errorThreshold = 3, mostSimilar = 0;
 
-		//Refresh files
-		File[] captures = DATABASE.listFiles();
-
 		//Check files for matches
-		for (File capture : captures)
+		for (File capture : Objects.requireNonNull(DATABASE.listFiles()))
 		{
 			//Calculate similarity between face on screen and face in database
 			int similarities = compareFaces(image, capture.getAbsolutePath());
@@ -156,7 +148,7 @@ public class FacialRecognition
 		//Margin of error
 		if (mostSimilar > errorThreshold)
 		{
-			String delimiter = faceID.indexOf(" (") == -1 ? "." : "(";
+			String delimiter = faceID.contains(" (") ? "(" : ".";
 			faceID = faceID.substring(0, faceID.indexOf(delimiter)).trim();
 		}
 		else
@@ -165,12 +157,12 @@ public class FacialRecognition
 		return faceID;
 	}
 
-	public int compareFaces(Mat currentImage, String fileName)
+	private int compareFaces(Mat currentImage, String fileName)
 	{
 		//Local variables
 		int similarity = 0;
 
-		//Images to compare
+		//Image to compare
 		Mat compareImage = Imgcodecs.imread(fileName);
 
 		//Create key point detector and descriptor extractor
@@ -207,7 +199,6 @@ public class FacialRecognition
 	{
 		File destination;
 		String extension = ".png";
-
 		String baseName = DATABASE + File.separator + name;
 
 		//Simplest file name

@@ -1,9 +1,8 @@
 package io.github.JakeJMattson.facialrecognition;
 
+import javax.swing.JPanel;
 import java.awt.*;
 import java.awt.image.BufferedImage;
-
-import javax.swing.JPanel;
 
 /**
  * Panel - holds image to display in GUI.
@@ -11,19 +10,19 @@ import javax.swing.JPanel;
  * @author JakeJMattson
  */
 @SuppressWarnings("serial")
-public class ImagePanel extends JPanel
+class ImagePanel extends JPanel
 {
 	/**
 	 * Image to be displayed to the user
 	 */
 	private BufferedImage image;
 
-	public ImagePanel()
+	ImagePanel()
 	{
 		super();
 	}
 
-	public void setImage(BufferedImage image)
+	void setImage(BufferedImage image)
 	{
 		this.image = image;
 	}
