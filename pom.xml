@@ -6,6 +6,7 @@
     <groupId>io.github.JakeJMattson</groupId>
     <artifactId>FacialRecognition</artifactId>
     <version>2.0</version>
+    <inceptionYear>2016</inceptionYear>
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
@@ -40,6 +41,31 @@
                     <source>${java.version}</source>
                     <target>${java.version}</target>
                 </configuration>
+            </plugin>
+            <plugin>
+                <groupId>com.mycila</groupId>
+                <artifactId>license-maven-plugin</artifactId>
+                <version>3.0</version>
+                <configuration>
+                    <header>com/mycila/maven/plugin/license/templates/MIT.txt</header>
+                    <properties>
+                        <owner>Jake Mattson</owner>
+                        <email>JakeJMattson@gmail.com</email>
+                    </properties>
+                    <excludes>
+                        <exclude>**/pom.xml</exclude>
+                        <exclude>**/README</exclude>
+                        <exclude>**/_config.yml</exclude>
+                        <exclude>src/main/resources/**</exclude>
+                    </excludes>
+                </configuration>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>format</goal>
+                        </goals>
+                    </execution>
+                </executions>
             </plugin>
         </plugins>
     </build>
