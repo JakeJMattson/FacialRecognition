@@ -25,7 +25,7 @@
  * Facial detection and recognition using OpenCV.
  */
 
-package io.github.JakeJMattson.facialrecognition;
+package io.github.jakejmattson.facialrecognition;
 
 import org.bytedeco.javacpp.*;
 import org.opencv.core.*;

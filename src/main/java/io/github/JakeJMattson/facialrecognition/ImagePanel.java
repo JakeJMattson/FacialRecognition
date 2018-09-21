@@ -20,7 +20,7 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package io.github.JakeJMattson.facialrecognition;
+package io.github.jakejmattson.facialrecognition;
 
 import javax.swing.JPanel;
 import java.awt.*;
