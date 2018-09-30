@@ -31,7 +31,6 @@ import java.awt.image.BufferedImage;
  *
  * @author JakeJMattson
  */
-@SuppressWarnings("serial")
 class ImagePanel extends JPanel
 {
 	/**

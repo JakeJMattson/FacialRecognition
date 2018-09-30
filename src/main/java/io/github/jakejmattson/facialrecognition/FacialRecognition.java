@@ -58,13 +58,13 @@ class FacialRecognition
 		Loader.load(opencv_java.class);
 
 		//Start program
-		new FacialRecognition().capture();
+		capture();
 
 		//Force exit
 		System.exit(0);
 	}
 
-	private void capture()
+	private static void capture()
 	{
 		File classifier = new File("lbpcascade_frontalface_improved.xml");
 
@@ -73,9 +73,6 @@ class FacialRecognition
 			displayFatalError("Unable to find classifier!");
 			return;
 		}
-
-		//Load classifier to detect faces
-		CascadeClassifier faceDetector = new CascadeClassifier(classifier.toString());
 
 		//Start camera
 		VideoCapture camera = new VideoCapture(0);
@@ -86,6 +83,9 @@ class FacialRecognition
 			displayFatalError("No camera detected!");
 			return;
 		}
+
+		//Load classifier to detect faces
+		CascadeClassifier faceDetector = new CascadeClassifier(classifier.toString());
 
 		//Create folder to store saved faces
 		if (!DATABASE.exists())
@@ -111,7 +111,7 @@ class FacialRecognition
 		camera.release();
 	}
 
-	private Mat detectFaces(Mat image, CascadeClassifier faceDetector, ImageFrame frame)
+	private static Mat detectFaces(Mat image, CascadeClassifier faceDetector, ImageFrame frame)
 	{
 		//Detect faces in image
 		MatOfRect faceDetections = new MatOfRect();
@@ -145,11 +145,12 @@ class FacialRecognition
 		return image;
 	}
 
-	private String identifyFace(Mat image)
+	private static String identifyFace(Mat image)
 	{
 		//Local variables
 		String faceID = "";
-		int errorThreshold = 3, mostSimilar = 0;
+		int errorThreshold = 3;
+		int mostSimilar = 0;
 
 		//Check files for matches
 		for (File capture : Objects.requireNonNull(DATABASE.listFiles()))
@@ -179,7 +180,7 @@ class FacialRecognition
 		return faceID;
 	}
 
-	private int compareFaces(Mat currentImage, String fileName)
+	private static int compareFaces(Mat currentImage, String fileName)
 	{
 		//Local variables
 		int similarity = 0;
@@ -191,12 +192,14 @@ class FacialRecognition
 		ORB orb = ORB.create();
 
 		//Detect key points
-		MatOfKeyPoint keypoints1 = new MatOfKeyPoint(), keypoints2 = new MatOfKeyPoint();
+		MatOfKeyPoint keypoints1 = new MatOfKeyPoint();
+		MatOfKeyPoint keypoints2 = new MatOfKeyPoint();
 		orb.detect(currentImage, keypoints1);
 		orb.detect(compareImage, keypoints2);
 
 		//Extract descriptors
-		Mat descriptors1 = new Mat(), descriptors2 = new Mat();
+		Mat descriptors1 = new Mat();
+		Mat descriptors2 = new Mat();
 		orb.compute(currentImage, keypoints1, descriptors1);
 		orb.compute(compareImage, keypoints2, descriptors2);
 
@@ -217,7 +220,7 @@ class FacialRecognition
 		return similarity;
 	}
 
-	private void saveImage(Mat image, String name)
+	private static void saveImage(Mat image, String name)
 	{
 		File destination;
 		String extension = ".png";
@@ -241,7 +244,7 @@ class FacialRecognition
 		Imgcodecs.imwrite(destination.toString(), image);
 	}
 
-	private void displayFatalError(String message)
+	private static void displayFatalError(String message)
 	{
 		JOptionPane.showMessageDialog(null, message, "Fatal Error", JOptionPane.ERROR_MESSAGE);
 	}

@@ -37,7 +37,6 @@ import java.util.Objects;
  *
  * @author JakeJMattson
  */
-@SuppressWarnings("serial")
 class ImageFrame implements ActionListener
 {
 	/**
@@ -59,7 +58,8 @@ class ImageFrame implements ActionListener
 
 	private JFrame frame;
 	private JTextField txtFileName;
-	private JButton btnSaveFile, btnSetColor;
+	private JButton btnSaveFile;
+	private JButton btnSetColor;
 	private JComboBox<String> colorDropDown;
 
 	//Class constants
@@ -120,7 +120,8 @@ class ImageFrame implements ActionListener
 	{
 		//Create panels
 		JPanel toolbarPanel = new JPanel(new FlowLayout());
-		JPanel savePanel = createSavePanel(), colorPanel = createColorPanel();
+		JPanel savePanel = createSavePanel();
+		JPanel colorPanel = createColorPanel();
 
 		//Combine panels
 		toolbarPanel.add(savePanel);
@@ -254,10 +255,11 @@ class ImageFrame implements ActionListener
 	 *
 	 * @return BufferedImage
 	 */
-	private BufferedImage convertMatToImage(Mat matrix)
+	private static BufferedImage convertMatToImage(Mat matrix)
 	{
 		//Get image dimensions
-		int width = matrix.width(), height = matrix.height();
+		int width = matrix.width();
+		int height = matrix.height();
 
 		int type = matrix.channels() != 1 ? BufferedImage.TYPE_3BYTE_BGR : BufferedImage.TYPE_BYTE_GRAY;
 
