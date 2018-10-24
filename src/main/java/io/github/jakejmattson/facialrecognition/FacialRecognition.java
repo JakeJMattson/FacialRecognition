@@ -54,13 +54,8 @@ class FacialRecognition
 
 	public static void main(String[] args)
 	{
-		//Load OpenCV
 		Loader.load(opencv_java.class);
-
-		//Start program
 		capture();
-
-		//Force exit
 		System.exit(0);
 	}
 
@@ -74,46 +69,33 @@ class FacialRecognition
 			return;
 		}
 
-		//Start camera
+		CascadeClassifier faceDetector = new CascadeClassifier(classifier.toString());
 		VideoCapture camera = new VideoCapture(0);
 
-		//Do not start if no camera is available
 		if (!camera.isOpened())
 		{
 			displayFatalError("No camera detected!");
 			return;
 		}
 
-		//Load classifier to detect faces
-		CascadeClassifier faceDetector = new CascadeClassifier(classifier.toString());
-
-		//Create folder to store saved faces
 		if (!DATABASE.exists())
 			DATABASE.mkdir();
 
-		//Create display
 		ImageFrame frame = new ImageFrame();
 
 		while (frame.isOpen() && camera.isOpened())
 		{
-			//Get image from camera
 			Mat rawImage = new Mat();
 			camera.read(rawImage);
-
-			//Detect and label faces
 			Mat newImage = detectFaces(rawImage, faceDetector, frame);
-
-			//Display result
 			frame.showImage(newImage);
 		}
 
-		//Return camera control to OS
 		camera.release();
 	}
 
 	private static Mat detectFaces(Mat image, CascadeClassifier faceDetector, ImageFrame frame)
 	{
-		//Detect faces in image
 		MatOfRect faceDetections = new MatOfRect();
 		faceDetector.detectMultiScale(image, faceDetections);
 		Rect[] faces = faceDetections.toArray();
@@ -123,21 +105,15 @@ class FacialRecognition
 
 		for (Rect face : faces)
 		{
-			//Crop image to detection
 			Mat croppedImage = new Mat(image, face);
 
-			//Save face image to disk
 			if (shouldSave)
 				saveImage(croppedImage, name);
 
-			//Add ID above detection
 			Imgproc.putText(image, "ID: " + identifyFace(croppedImage), face.tl(), Font.BOLD, 1.5, color);
-
-			//Draw rectangle around the detection
 			Imgproc.rectangle(image, face.tl(), face.br(), color);
 		}
 
-		//Display number of detections
 		int faceCount = faces.length;
 		String message = faceCount + (faceCount == 1 ? "face" : "faces") + " detected!";
 		Imgproc.putText(image, message, new Point(3, 25), Font.BOLD, 2, color);
@@ -147,28 +123,21 @@ class FacialRecognition
 
 	private static String identifyFace(Mat image)
 	{
-		//Local variables
 		String faceID = "";
 		int errorThreshold = 3;
 		int mostSimilar = 0;
 
-		//Check files for matches
 		for (File capture : Objects.requireNonNull(DATABASE.listFiles()))
 		{
-			//Calculate similarity between face on screen and face in database
 			int similarities = compareFaces(image, capture.getAbsolutePath());
 
-			//Find most similar face in list
 			if (similarities > mostSimilar)
 			{
 				mostSimilar = similarities;
-
-				//Get name from file
 				faceID = capture.getName();
 			}
 		}
 
-		//Margin of error
 		if (mostSimilar > errorThreshold)
 		{
 			String delimiter = faceID.contains(" (") ? "(" : ".";
@@ -182,22 +151,15 @@ class FacialRecognition
 
 	private static int compareFaces(Mat currentImage, String fileName)
 	{
-		//Local variables
+		Mat compareImage = Imgcodecs.imread(fileName);
+		ORB orb = ORB.create();
 		int similarity = 0;
 
-		//Image to compare
-		Mat compareImage = Imgcodecs.imread(fileName);
-
-		//Create key point detector and descriptor extractor
-		ORB orb = ORB.create();
-
-		//Detect key points
 		MatOfKeyPoint keypoints1 = new MatOfKeyPoint();
 		MatOfKeyPoint keypoints2 = new MatOfKeyPoint();
 		orb.detect(currentImage, keypoints1);
 		orb.detect(compareImage, keypoints2);
 
-		//Extract descriptors
 		Mat descriptors1 = new Mat();
 		Mat descriptors2 = new Mat();
 		orb.compute(currentImage, keypoints1, descriptors1);
@@ -205,13 +167,11 @@ class FacialRecognition
 
 		if (descriptors1.cols() == descriptors2.cols())
 		{
-			//Check matches of key points
 			MatOfDMatch matchMatrix = new MatOfDMatch();
 			DescriptorMatcher matcher = DescriptorMatcher.create(DescriptorMatcher.BRUTEFORCE_HAMMING);
 			matcher.match(descriptors1, descriptors2, matchMatrix);
 			DMatch[] matches = matchMatrix.toArray();
 
-			//Determine similarity
 			for (DMatch match : matches)
 				if (match.distance <= 50)
 					similarity++;
@@ -225,8 +185,6 @@ class FacialRecognition
 		File destination;
 		String extension = ".png";
 		String baseName = DATABASE + File.separator + name;
-
-		//Simplest file name
 		File basic = new File(baseName + extension);
 
 		if (!basic.exists())
@@ -235,7 +193,6 @@ class FacialRecognition
 		{
 			int index = 0;
 
-			//Avoid overwriting files by adding numbers to a duplicate
 			do
 				destination = new File(baseName + " (" + index++ + ")" + extension);
 			while (destination.exists());

@@ -62,7 +62,6 @@ class ImageFrame implements ActionListener
 	private JButton btnSetColor;
 	private JComboBox<String> colorDropDown;
 
-	//Class constants
 	private static final Color DEFAULT_COLOR = Color.BLUE;
 
 	ImageFrame()
@@ -76,22 +75,15 @@ class ImageFrame implements ActionListener
 	 */
 	private void buildGUI()
 	{
-		frame = new JFrame("Facial Recognition");
+		imagePanel = new ImagePanel();
+		isOpen = true;
 
-		//Set frame preferences
+		frame = new JFrame("Facial Recognition");
 		frame.addWindowListener(createWindowListener());
 		frame.setLayout(new BorderLayout());
-
-		//Create panel for image
-		imagePanel = new ImagePanel();
-
-		//Add panels to frame
 		frame.add("Center", imagePanel);
 		frame.add("South", createToolbarPanel());
-
-		//Show frame
 		frame.setVisible(true);
-		isOpen = true;
 	}
 
 	/**
@@ -118,12 +110,10 @@ class ImageFrame implements ActionListener
 	 */
 	private JPanel createToolbarPanel()
 	{
-		//Create panels
 		JPanel toolbarPanel = new JPanel(new FlowLayout());
 		JPanel savePanel = createSavePanel();
 		JPanel colorPanel = createColorPanel();
 
-		//Combine panels
 		toolbarPanel.add(savePanel);
 		toolbarPanel.add(colorPanel);
 
@@ -137,18 +127,15 @@ class ImageFrame implements ActionListener
 	 */
 	private JPanel createSavePanel()
 	{
-		//Create panels
 		JPanel namePanel = new JPanel(new GridLayout(0, 2));
 		JPanel savePanel = new JPanel(new FlowLayout());
 		savePanel.setBorder(BorderFactory.createLineBorder(Color.black));
 
-		//Create GUI components
 		JLabel lblFileName = new JLabel("Name of person in frame: ");
 		txtFileName = new JTextField("");
 		btnSaveFile = new JButton("Save Face");
 		btnSaveFile.addActionListener(this);
 
-		//Add components to panel
 		namePanel.add(lblFileName);
 		namePanel.add(txtFileName);
 		savePanel.add(namePanel);
@@ -164,14 +151,11 @@ class ImageFrame implements ActionListener
 	 */
 	private JPanel createColorPanel()
 	{
-		//Create panel
 		JPanel colorPanel = new JPanel();
 		colorPanel.setBorder(BorderFactory.createLineBorder(Color.black));
 
-		//Drop down options
 		String[] colorOptions = {"BLUE", "CYAN", "GREEN", "MAGENTA", "ORANGE", "RED"};
 
-		//Instantiate GUI components
 		colorDropDown = new JComboBox<>();
 		btnSetColor = new JButton("Set Color");
 		btnSetColor.addActionListener(this);
@@ -179,7 +163,6 @@ class ImageFrame implements ActionListener
 		for (String option : colorOptions)
 			colorDropDown.addItem(option);
 
-		//Add components to panel
 		colorPanel.add(colorDropDown);
 		colorPanel.add(btnSetColor);
 
@@ -237,13 +220,8 @@ class ImageFrame implements ActionListener
 	 */
 	void showImage(Mat image)
 	{
-		//Send image to panel
 		imagePanel.setImage(convertMatToImage(image));
-
-		//Redraw frame
 		frame.repaint();
-
-		//Resize frame to fit image
 		frame.pack();
 	}
 
@@ -257,31 +235,22 @@ class ImageFrame implements ActionListener
 	 */
 	private static BufferedImage convertMatToImage(Mat matrix)
 	{
-		//Get image dimensions
 		int width = matrix.width();
 		int height = matrix.height();
-
 		int type = matrix.channels() != 1 ? BufferedImage.TYPE_3BYTE_BGR : BufferedImage.TYPE_BYTE_GRAY;
 
 		if (type == BufferedImage.TYPE_3BYTE_BGR)
 			Imgproc.cvtColor(matrix, matrix, Imgproc.COLOR_BGR2RGB);
 
-		//Get matrix data
 		byte[] data = new byte[width * height * (int) matrix.elemSize()];
 		matrix.get(0, 0, data);
 
-		//Create image with matrix data
 		BufferedImage out = new BufferedImage(width, height, type);
 		out.getRaster().setDataElements(0, 0, width, height, data);
 
 		return out;
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * @see java.awt.event.ActionListener
-	 * #actionPerformed(java.awt.event.ActionEvent)
-	 */
 	@Override
 	public void actionPerformed(ActionEvent click)
 	{
@@ -290,7 +259,6 @@ class ImageFrame implements ActionListener
 		if (src == btnSetColor)
 			try
 			{
-				//Get color from string name
 				Field field = Color.class.getField((String) Objects.requireNonNull(colorDropDown.getSelectedItem()));
 				color = (Color) field.get(null);
 			}

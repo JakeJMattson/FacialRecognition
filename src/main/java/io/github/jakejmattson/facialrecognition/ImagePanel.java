@@ -48,10 +48,6 @@ class ImagePanel extends JPanel
 		this.image = image;
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * @see javax.swing.JComponent#paintComponent(java.awt.Graphics)
-	 */
 	@Override
 	public void paintComponent(Graphics g)
 	{
@@ -59,10 +55,7 @@ class ImagePanel extends JPanel
 
 		if (image != null)
 		{
-			//Draw image onto panel
 			g.drawImage(image, 0, 0, null);
-
-			//Set panel size
 			setPreferredSize(new Dimension(image.getWidth(), image.getHeight()));
 		}
 	}
