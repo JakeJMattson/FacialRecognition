@@ -28,26 +28,11 @@ Basic facial detection and recognition using OpenCV.
 * [OpenCV](https://opencv.org/about.html)
 
 ## Getting Started
-<p align="justify">
-The version numbers for each additional software used to build this project are listed in the badges at the top of the page. These dependencies are handled by Maven during build. If building manually, other versions may work, but this is not guaranteed.
-</p>
-
 ### Installing Java
 <p align="justify">
 Visit the <a href="http://www.oracle.com/technetwork/java/javase/downloads/index.html">Java Downloads</a> 
 page and select the version of your choice.
 Run the installer and follow the instructions provided.
-</p>
-
-### Building OpenCV
-**Note:** Included as Maven dependency. Below are manual instructions.
-<br/>
-<p align="justify">
-Visit the <a href="https://opencv.org/releases.html">OpenCV Releases</a> page and select the version of your choice.
-Note: older versions of this library may work with this code, but this is not gauranteed.
-Please read the tutorial on
-<a href="https://github.com/opencv-java/opencv-java-tutorials/blob/master/docs/source/01-installing-opencv-for-java.rst">
-Installing OpenCV for Java</a> in order to correctly build OpenCV for your operating system.
 </p>
 
 ## Building
