@@ -1,6 +1,6 @@
 <p align="center">
   <a href="https://jdk.java.net/11/">
-    <img src="https://img.shields.io/badge/Java-8-blue.svg" alt="Java 11">
+    <img src="https://img.shields.io/badge/Java-11-blue.svg" alt="Java 11">
   </a>
   <a href="https://sourceforge.net/projects/opencvlibrary/files/opencv-win/3.4.2/opencv-3.4.2-vc14_vc15.exe/download">
     <img src="https://img.shields.io/badge/OpenCV-3.4.2-blue.svg">
