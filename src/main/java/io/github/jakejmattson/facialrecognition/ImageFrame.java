@@ -8,7 +8,7 @@ import java.awt.*;
 import java.awt.event.*;
 import java.awt.image.BufferedImage;
 import java.lang.reflect.Field;
-import java.util.Objects;
+import java.util.*;
 
 /**
  * Frame - GUI container for components (holds ImagePanel).
@@ -36,7 +36,6 @@ class ImageFrame
 
 	private JFrame frame;
 	private JTextField txtFileName;
-	private JComboBox<String> colorDropDown;
 
 	private static final Color DEFAULT_COLOR = Color.BLUE;
 
@@ -89,12 +88,9 @@ class ImageFrame
 		JPanel toolbarPanel = new JPanel();
 		toolbarPanel.setLayout(new BoxLayout(toolbarPanel, BoxLayout.LINE_AXIS));
 
-		JPanel savePanel = createSavePanel();
-		JPanel colorPanel = createColorPanel();
-
-		toolbarPanel.add(savePanel);
+		toolbarPanel.add(createSavePanel());
 		toolbarPanel.add(Box.createHorizontalGlue());
-		toolbarPanel.add(colorPanel);
+		toolbarPanel.add(createColorPanel());
 
 		return toolbarPanel;
 	}
@@ -106,19 +102,17 @@ class ImageFrame
 	 */
 	private JPanel createSavePanel()
 	{
-		JPanel namePanel = new JPanel();
 		JPanel savePanel = new JPanel();
 		savePanel.setBorder(BorderFactory.createLineBorder(Color.black));
 
-		JLabel lblFileName = new JLabel("Name of person in frame: ");
 		txtFileName = new JTextField(20);
 		JButton btnSaveFile = new JButton("Save Face");
 		btnSaveFile.addActionListener(actionEvent -> shouldSave = true);
 
-		namePanel.add(lblFileName);
+		JPanel namePanel = new JPanel();
+		namePanel.add(new JLabel("Name of person in frame: "));
 		namePanel.add(txtFileName);
-		savePanel.add(namePanel);
-		savePanel.add(btnSaveFile);
+		savePanel.add(namePanel, btnSaveFile);
 
 		return savePanel;
 	}
@@ -133,12 +127,9 @@ class ImageFrame
 		JPanel colorPanel = new JPanel();
 		colorPanel.setBorder(BorderFactory.createLineBorder(Color.black));
 
+		JComboBox<String> colorDropDown = new JComboBox<>();
 		String[] colorOptions = {"BLUE", "CYAN", "GREEN", "MAGENTA", "ORANGE", "RED"};
-
-		colorDropDown = new JComboBox<>();
-
-		for (String option : colorOptions)
-			colorDropDown.addItem(option);
+		Arrays.stream(colorOptions).forEach(colorDropDown::addItem);
 
 		colorDropDown.addActionListener(actionEvent -> {
 			try

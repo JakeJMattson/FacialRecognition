@@ -88,7 +88,7 @@ class FacialRecognition
 		}
 
 		int faceCount = faces.length;
-		String message = faceCount + (faceCount == 1 ? "face" : "faces") + " detected!";
+		String message = faceCount + " face" + (faceCount == 1 ? "" : "s") + " detected!";
 		Imgproc.putText(image, message, new Point(3, 25), Font.BOLD, 2, color);
 
 		return image;
@@ -96,9 +96,9 @@ class FacialRecognition
 
 	private static String identifyFace(Mat image)
 	{
-		String faceID = "";
 		int errorThreshold = 3;
-		int mostSimilar = 0;
+		int mostSimilar = -1;
+		File mostSimilarFile = null;
 
 		for (File capture : Objects.requireNonNull(DATABASE.listFiles()))
 		{
@@ -107,19 +107,18 @@ class FacialRecognition
 			if (similarities > mostSimilar)
 			{
 				mostSimilar = similarities;
-				faceID = capture.getName();
+				mostSimilarFile = capture;
 			}
 		}
 
-		if (mostSimilar > errorThreshold)
+		if (mostSimilarFile != null && mostSimilar > errorThreshold)
 		{
+			String faceID = mostSimilarFile.getName();
 			String delimiter = faceID.contains(" (") ? "(" : ".";
-			faceID = faceID.substring(0, faceID.indexOf(delimiter)).trim();
+			return faceID.substring(0, faceID.indexOf(delimiter)).trim();
 		}
 		else
-			faceID = "???";
-
-		return faceID;
+			return "???";
 	}
 
 	private static int compareFaces(Mat currentImage, String fileName)
@@ -141,11 +140,9 @@ class FacialRecognition
 		if (descriptors1.cols() == descriptors2.cols())
 		{
 			MatOfDMatch matchMatrix = new MatOfDMatch();
-			DescriptorMatcher matcher = DescriptorMatcher.create(DescriptorMatcher.BRUTEFORCE_HAMMING);
-			matcher.match(descriptors1, descriptors2, matchMatrix);
-			DMatch[] matches = matchMatrix.toArray();
+			DescriptorMatcher.create(DescriptorMatcher.BRUTEFORCE_HAMMING).match(descriptors1, descriptors2, matchMatrix);
 
-			for (DMatch match : matches)
+			for (DMatch match : matchMatrix.toList())
 				if (match.distance <= 50)
 					similarity++;
 		}
