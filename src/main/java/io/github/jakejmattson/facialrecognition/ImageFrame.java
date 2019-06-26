@@ -15,7 +15,7 @@ import java.util.Objects;
  *
  * @author JakeJMattson
  */
-class ImageFrame implements ActionListener
+class ImageFrame
 {
 	/**
 	 * Whether or not the frame is currently open
@@ -36,8 +36,6 @@ class ImageFrame implements ActionListener
 
 	private JFrame frame;
 	private JTextField txtFileName;
-	private JButton btnSaveFile;
-	private JButton btnSetColor;
 	private JComboBox<String> colorDropDown;
 
 	private static final Color DEFAULT_COLOR = Color.BLUE;
@@ -88,11 +86,14 @@ class ImageFrame implements ActionListener
 	 */
 	private JPanel createToolbarPanel()
 	{
-		JPanel toolbarPanel = new JPanel(new FlowLayout());
+		JPanel toolbarPanel = new JPanel();
+		toolbarPanel.setLayout(new BoxLayout(toolbarPanel, BoxLayout.LINE_AXIS));
+
 		JPanel savePanel = createSavePanel();
 		JPanel colorPanel = createColorPanel();
 
 		toolbarPanel.add(savePanel);
+		toolbarPanel.add(Box.createHorizontalGlue());
 		toolbarPanel.add(colorPanel);
 
 		return toolbarPanel;
@@ -105,14 +106,14 @@ class ImageFrame implements ActionListener
 	 */
 	private JPanel createSavePanel()
 	{
-		JPanel namePanel = new JPanel(new GridLayout(0, 2));
-		JPanel savePanel = new JPanel(new FlowLayout());
+		JPanel namePanel = new JPanel();
+		JPanel savePanel = new JPanel();
 		savePanel.setBorder(BorderFactory.createLineBorder(Color.black));
 
 		JLabel lblFileName = new JLabel("Name of person in frame: ");
-		txtFileName = new JTextField("");
-		btnSaveFile = new JButton("Save Face");
-		btnSaveFile.addActionListener(this);
+		txtFileName = new JTextField(20);
+		JButton btnSaveFile = new JButton("Save Face");
+		btnSaveFile.addActionListener(actionEvent -> shouldSave = true);
 
 		namePanel.add(lblFileName);
 		namePanel.add(txtFileName);
@@ -135,14 +136,23 @@ class ImageFrame implements ActionListener
 		String[] colorOptions = {"BLUE", "CYAN", "GREEN", "MAGENTA", "ORANGE", "RED"};
 
 		colorDropDown = new JComboBox<>();
-		btnSetColor = new JButton("Set Color");
-		btnSetColor.addActionListener(this);
 
 		for (String option : colorOptions)
 			colorDropDown.addItem(option);
 
+		colorDropDown.addActionListener(actionEvent -> {
+			try
+			{
+				Field field = Color.class.getField((String) Objects.requireNonNull(colorDropDown.getSelectedItem()));
+				color = (Color) field.get(null);
+			}
+			catch (NoSuchFieldException | IllegalAccessException e)
+			{
+				color = DEFAULT_COLOR;
+			}
+		});
+
 		colorPanel.add(colorDropDown);
-		colorPanel.add(btnSetColor);
 
 		return colorPanel;
 	}
@@ -227,24 +237,5 @@ class ImageFrame implements ActionListener
 		out.getRaster().setDataElements(0, 0, width, height, data);
 
 		return out;
-	}
-
-	@Override
-	public void actionPerformed(ActionEvent click)
-	{
-		Object src = click.getSource();
-
-		if (src == btnSetColor)
-			try
-			{
-				Field field = Color.class.getField((String) Objects.requireNonNull(colorDropDown.getSelectedItem()));
-				color = (Color) field.get(null);
-			}
-			catch (NoSuchFieldException | IllegalAccessException e)
-			{
-				color = DEFAULT_COLOR;
-			}
-		else if (src == btnSaveFile)
-			shouldSave = true;
 	}
 }
