@@ -11,25 +11,25 @@ import java.awt.image.BufferedImage;
  */
 class ImagePanel extends JPanel
 {
-	/**
-	 * Image to be displayed to the user
-	 */
-	private BufferedImage image;
+    /**
+     * Image to be displayed to the user
+     */
+    private BufferedImage image;
 
-	void setImage(BufferedImage image)
-	{
-		this.image = image;
-	}
+    void setImage(BufferedImage image)
+    {
+        this.image = image;
+    }
 
-	@Override
-	public void paintComponent(Graphics g)
-	{
-		super.paintComponent(g);
+    @Override
+    public void paintComponent(Graphics g)
+    {
+        super.paintComponent(g);
 
-		if (image == null)
-			return;
+        if (image == null)
+            return;
 
-		g.drawImage(image, 0, 0, null);
-		setPreferredSize(new Dimension(image.getWidth(), image.getHeight()));
-	}
+        g.drawImage(image, 0, 0, null);
+        setPreferredSize(new Dimension(image.getWidth(), image.getHeight()));
+    }
 }
