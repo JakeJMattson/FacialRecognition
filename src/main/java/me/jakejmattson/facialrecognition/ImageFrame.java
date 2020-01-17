@@ -1,4 +1,4 @@
-package io.github.jakejmattson.facialrecognition;
+package me.jakejmattson.facialrecognition;
 
 import org.opencv.core.*;
 import org.opencv.imgproc.Imgproc;

@@ -1,4 +1,4 @@
-package io.github.jakejmattson.facialrecognition;
+package me.jakejmattson.facialrecognition;
 
 import org.bytedeco.javacpp.*;
 import org.opencv.core.*;

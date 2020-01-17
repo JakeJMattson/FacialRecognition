@@ -1,4 +1,4 @@
-package io.github.jakejmattson.facialrecognition;
+package me.jakejmattson.facialrecognition;
 
 import javax.swing.JPanel;
 import java.awt.*;
