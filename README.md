@@ -2,8 +2,8 @@
   <a href="https://jdk.java.net/11/">
     <img src="https://img.shields.io/badge/Java-11-blue.svg" alt="Java 11">
   </a>
-  <a href="https://sourceforge.net/projects/opencvlibrary/files/opencv-win/3.4.2/opencv-3.4.2-vc14_vc15.exe/download">
-    <img src="https://img.shields.io/badge/OpenCV-3.4.2-blue.svg">
+  <a href="https://opencv.org/releases/">
+    <img src="https://img.shields.io/badge/OpenCV-4.0.1-blue.svg" alt="OpenCV-4.0.1">
   </a>
   <a href="https://GitHub.com/JakeJMattson/FacialRecognition/releases">
     <img src="https://img.shields.io/github/release/JakeJMattson/FacialRecognition.svg" alt="release">
