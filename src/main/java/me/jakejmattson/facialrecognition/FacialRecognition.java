@@ -1,6 +1,6 @@
 package me.jakejmattson.facialrecognition;
 
-import org.bytedeco.javacpp.*;
+import nu.pattern.OpenCV;
 import org.opencv.core.*;
 import org.opencv.features2d.*;
 import org.opencv.imgcodecs.Imgcodecs;
@@ -27,7 +27,7 @@ class FacialRecognition
 
     public static void main(String[] args)
     {
-        Loader.load(opencv_java.class);
+        OpenCV.loadLocally();
         capture();
         System.exit(0);
     }
@@ -43,7 +43,8 @@ class FacialRecognition
         }
 
         CascadeClassifier faceDetector = new CascadeClassifier(classifier.toString());
-        VideoCapture camera = new VideoCapture(0);
+        VideoCapture camera = new VideoCapture();
+        camera.open(0);
 
         if (!camera.isOpened())
         {
